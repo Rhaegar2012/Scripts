@@ -8,7 +8,6 @@ public class Pacman : MonoBehaviour
     [SerializeField] float pacmanSpeed;
     [SerializeField] float distanceTolerance;
     public Node currentNode;
-    public List<Node> pathNodes=new List<Node>();
     private Rigidbody2D myRigidBody;
     private Vector2 currentDirection;
     private bool advance=true;
@@ -38,9 +37,7 @@ public class Pacman : MonoBehaviour
     public void Move(Node node,Vector2 direction)
     {
         currentDirection=direction;
-        pathNodes.Add(node);
         currentNode=node;
-
         if(!graph.IsValidNode(currentDirection,currentNode))
         {
             if(IsCurrentNodeReached(currentNode))
@@ -77,9 +74,15 @@ public class Pacman : MonoBehaviour
         }
     }
 
-    void OnTriggerEntry2D(Collider other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         //TODO
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collision detected");
+        advance=false;
     }
 
  
