@@ -106,26 +106,24 @@ public class GameManager : MonoBehaviour
                 movementDirection=trialDirection;
                 
             }
-            else
+                
+        }
+        //Pacman switches direction midpath 
+        else if(!pacMan.IsCurrentNodeReached(pacMan.currentNode))
+        {
+            Node switchNode=graph.nodes[(int)pacMan.transform.position.x,(int)pacMan.transform.position.y];
+            Debug.Log(switchNode.position);
+            if(graph.IsValidNode(trialDirection,switchNode))
             {
-                foreach(Node node in pacMan.pathNodes)
-                {
-                    if(graph.IsValidNode(trialDirection,node))
-                    {
-                        if(pacMan.IsCurrentNodeReached(node))
-                        {
-                            Debug.Log("Midpath switched");
-                            movementDirection=trialDirection;
-                            
-                        }
-                    }
-                }
+        
+                Debug.Log("Direction switched midpath");
+                movementDirection=trialDirection;
+            }
 
-            }     
         }
 
         
-        //Pacman switches direction midpath 
+        
    
     
     }

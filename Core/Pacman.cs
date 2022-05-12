@@ -40,7 +40,6 @@ public class Pacman : MonoBehaviour
         currentDirection=direction;
         pathNodes.Add(node);
         currentNode=node;
-        Debug.Log(currentNode.position);
 
         if(!graph.IsValidNode(currentDirection,currentNode))
         {
@@ -76,15 +75,6 @@ public class Pacman : MonoBehaviour
         {
             return false;
         }
-    }
-
-
-    void UpdateTransform()
-    {
-        Vector3 movementSpeed=currentDirection*pacmanSpeed;
-        Debug.Log(movementSpeed);
-        transform.position+=(Vector3)currentDirection*pacmanSpeed*Time.deltaTime;
-        //myRigidBody.AddForce(currentDirection*pacmanSpeed);
     }
 
     void OnTriggerEntry2D(Collider other)
