@@ -10,19 +10,10 @@ public class Pacman : MonoBehaviour
     public Node currentNode;
     private Rigidbody2D myRigidBody;
     private Vector2 currentDirection;
-    private bool advance=true;
     //Unity event
     void Update()
     {
-        if(advance)
-        {
-            transform.position+=(Vector3)currentDirection*pacmanSpeed*Time.deltaTime;
-            if(IsCurrentNodeReached(currentNode))
-            {
-                advance=false;
-                transform.position=currentNode.position;
-            }
-        }
+        transform.position=Vector3.MoveTowards(transform.position,currentNode.position,pacmanSpeed*Time.deltaTime);
     }
     //Initializes PacMan from GameController
     public void Init(Node startNode,Graph maze)
@@ -38,52 +29,12 @@ public class Pacman : MonoBehaviour
     {
         currentDirection=direction;
         currentNode=node;
-        if(!graph.IsValidNode(currentDirection,currentNode))
-        {
-            if(IsCurrentNodeReached(currentNode))
-            {
-                advance=false;
-            }
-            else
-            {
-                advance=true;
-            }
-           
-          
-        }
-        else
-        {
-            advance=true;
-        }
-        
-    
     }
-
-    public bool IsCurrentNodeReached(Node node)
-    {
-        float distance=Vector3.Distance(transform.position,node.position);
-        if(distance<distanceTolerance)
-        {
-            transform.position=node.position;
-            return true;
-           
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     void OnTriggerEnter2D(Collider2D other)
     {
         //TODO
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("Collision detected");
-        advance=false;
-    }
 
  
 }

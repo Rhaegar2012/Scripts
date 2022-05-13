@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Maze Initalization")]
     [SerializeField] public MazeData mazeData;
     [SerializeField] public Graph graph;
     [SerializeField] public GraphView graphView;
-    [SerializeField] Pacman pacMan;
-    [SerializeField] Vector2 movementDirection;
+    [Header("Pacman Initialization")]
+    [SerializeField] GameObject pacmanPrefab;
+    [SerializeField] Vector3 pacmanStartNode;
+    [SerializeField] Vector3 movementDirection;
+    private GameObject pacManObject;
+    private Pacman pacMan;
+
 
     
     
@@ -17,7 +23,13 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         CreateMaze();
-        pacMan.Init(graph.nodes[9,9],graph);
+        if(pacmanPrefab)
+        {
+            pacManObject=InstantiatePacman(pacmanStartNode,pacmanPrefab);
+            pacMan=pacManObject.GetComponent<Pacman>();
+            pacMan.Init(graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y],graph);
+        }
+       
         
     }
 
@@ -42,6 +54,11 @@ public class GameManager : MonoBehaviour
         {
             graphView.Init(graph);
         }
+    }
+    GameObject InstantiatePacman(Vector3 pacmanNode,GameObject pacmanPrefab)
+    {
+         GameObject instance=Instantiate(pacmanPrefab,pacmanNode,Quaternion.identity);
+         return instance;
     }
     void PlayerInput()
     {
@@ -100,12 +117,10 @@ public class GameManager : MonoBehaviour
         int pacManX=(int) pacMan.transform.position.x;
         int pacManY=(int) pacMan.transform.position.y;
         Node switchNode =graph.nodes[pacManX,pacManY];
-        Debug.Log("switch Node position");
-        Debug.Log(switchNode.position);
         if(graph.IsValidNode(trialDirection,switchNode))
         {
-            Debug.Log("Switch initiated");
             movementDirection=trialDirection;
+            PacManMove(movementDirection,switchNode);
         }
     }
 
