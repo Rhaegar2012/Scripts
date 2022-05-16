@@ -12,8 +12,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject pacmanPrefab;
     [SerializeField] Vector3 pacmanStartNode;
     [SerializeField] Vector3 movementDirection;
+    [Header("Ghost Initialization")]
+    [SerializeField] GameObject[] ghostPrefabs;
+    [SerializeField] Vector3[] ghostStartNodes;
     private GameObject pacManObject;
     private Pacman pacMan;
+    private List<GameObject> ghosts;
 
 
     
@@ -23,12 +27,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         CreateMaze();
-        if(pacmanPrefab)
-        {
-            pacManObject=InstantiatePacman(pacmanStartNode,pacmanPrefab);
-            pacMan=pacManObject.GetComponent<Pacman>();
-            pacMan.Init(graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y],graph);
-        }
+        DrawPacMan();
        
         
     }
@@ -43,6 +42,7 @@ public class GameManager : MonoBehaviour
             
         }
     }
+    //Draw GameObjects
     void CreateMaze()
     {
         if(mazeData!=null&&graph!=null)
@@ -55,9 +55,29 @@ public class GameManager : MonoBehaviour
             graphView.Init(graph);
         }
     }
-    GameObject InstantiatePacman(Vector3 pacmanNode,GameObject pacmanPrefab)
+    void DrawPacMan()
     {
-         GameObject instance=Instantiate(pacmanPrefab,pacmanNode,Quaternion.identity);
+        if(pacmanPrefab)
+        {
+            pacManObject=InstantiateGameObject(pacmanStartNode,pacmanPrefab);
+            pacMan=pacManObject.GetComponent<Pacman>();
+            pacMan.Init(graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y],graph);
+        }
+    }
+    void DrawGhosts()
+    {
+        
+        for(int i=0;i<ghostPrefabs.Length;i++)
+        {
+            GameObject ghost =InstantiateGameObject(ghostStartNodes[i],ghostPrefabs[i]);
+            //TODO
+            ghosts.Add(ghost);
+
+        }
+    }
+    GameObject InstantiateGameObject(Vector3 nodePosition,GameObject gameObjectPrefab)
+    {
+         GameObject instance=Instantiate(gameObjectPrefab,nodePosition,Quaternion.identity);
          return instance;
     }
     void PlayerInput()
@@ -123,6 +143,7 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection,switchNode);
         }
     }
+
 
 
 }
