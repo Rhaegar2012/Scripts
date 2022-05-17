@@ -17,7 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Vector3[] ghostStartNodes;
     private GameObject pacManObject;
     private Pacman pacMan;
-    private List<GameObject> ghosts;
+    private List<GameObject> ghosts=new List<GameObject>();
+    private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
     
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
     {
         CreateMaze();
         DrawPacMan();
+        DrawGhosts();
        
         
     }
@@ -69,9 +71,11 @@ public class GameManager : MonoBehaviour
         
         for(int i=0;i<ghostPrefabs.Length;i++)
         {
-            GameObject ghost =InstantiateGameObject(ghostStartNodes[i],ghostPrefabs[i]);
-            //TODO
-            ghosts.Add(ghost);
+            GameObject instance =InstantiateGameObject(ghostStartNodes[i],ghostPrefabs[i]);
+            Ghost ghost = instance.GetComponent<Ghost>();
+            Node startNode=graph.nodes[(int)ghostStartNodes[i].x,(int)ghostStartNodes[i].y];
+            ghost.Init(ghostNames[i],startNode,graph);
+            ghosts.Add(instance);
 
         }
     }
