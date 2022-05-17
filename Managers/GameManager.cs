@@ -15,9 +15,11 @@ public class GameManager : MonoBehaviour
     [Header("Ghost Initialization")]
     [SerializeField] GameObject[] ghostPrefabs;
     [SerializeField] Vector3[] ghostStartNodes;
+    [Header("Pathfinder")]
+    [SerializeField] Pathfinder pathfinder;
     private GameObject pacManObject;
     private Pacman pacMan;
-    private List<GameObject> ghosts=new List<GameObject>();
+    private List<GameObject> ghosts;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
@@ -30,7 +32,6 @@ public class GameManager : MonoBehaviour
         CreateMaze();
         DrawPacMan();
         DrawGhosts();
-       
         
     }
 
@@ -43,6 +44,11 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection, pacMan.currentNode);
             
         }
+        if(ghosts!=null)
+        {
+            //GhostMove();
+        }
+        
     }
     //Draw GameObjects
     void CreateMaze()
@@ -68,6 +74,7 @@ public class GameManager : MonoBehaviour
     }
     void DrawGhosts()
     {
+        ghosts= new List<GameObject>();
         
         for(int i=0;i<ghostPrefabs.Length;i++)
         {
@@ -145,6 +152,21 @@ public class GameManager : MonoBehaviour
         {
             movementDirection=trialDirection;
             PacManMove(movementDirection,switchNode);
+        }
+    }
+
+    void GhostMove()
+    {
+        if(ghosts!=null)
+        {
+            foreach(GameObject instance in ghosts)
+            {
+                Ghost ghost = instance.GetComponent<Ghost>();
+                pathfinder.Init(graph,ghost.currentNode,pacMan.currentNode);
+                List<Node> nodePath= pathfinder.SearchRoutine();
+                ghost.MoveGhost(nodePath);
+
+            }
         }
     }
 

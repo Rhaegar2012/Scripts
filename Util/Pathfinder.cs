@@ -21,8 +21,87 @@ public class Pathfinder : MonoBehaviour
         this.frontierNodes=new PriorityQueue<Node>();
         this.exploredNodes= new List<Node>();
         //Clears data from previous pathfinding
-        
+        for(int x=0;x<graph.width;x++)
+        {
+            for(int y=0;y<graph.height;y++)
+            {
+                graph.nodes[x,y].Reset();
+            }
+        }
+        isComplete=false;
+        iterations=0;
+        startNode.distanceTraveled=0;
 
+    }
+
+    //Search Routine 
+    public List<Node> SearchRoutine()
+    {
+        while(!isComplete)
+        {
+            if(frontierNodes.Count>0)
+            {
+                Node currentNode=frontierNodes.Dequeue();
+                iterations++;
+                if(!exploredNodes.Contains(currentNode))
+                {
+                    exploredNodes.Add(currentNode);
+                }
+                ExpandFrontier(currentNode);
+                if(frontierNodes.Contains(goalNode))
+                {
+                    Debug.Log("Accessed Search exit");
+                    pathNodes=GetPathNodes(goalNode);
+                    isComplete=true;
+                }
+                Debug.Log("Iterations: "+iterations.ToString());
+            }
+        }
+        return pathNodes;
+    }
+    //Expand Frontier method (Dijkstra's Algorithm)
+    void ExpandFrontier(Node node)
+    {
+        if(node!=null)
+        {
+            for(int i=0; i<node.neighbors.Count;i++)
+            {
+                if(!exploredNodes.Contains(node.neighbors[i]))
+                {
+                    float distanceToNeighbor=graph.GetNodeDistance(node,node.neighbors[i]);
+                    float newDistanceTraveled=distanceToNeighbor+node.distanceTraveled;
+                    if(float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)||
+                    newDistanceTraveled<node.neighbors[i].distanceTraveled)
+                    {
+                        node.neighbors[i].previous=node;
+                        node.neighbors[i].distanceTraveled=newDistanceTraveled;
+                    }
+                    if(!frontierNodes.Contains(node.neighbors[i]))
+                    {
+                        node.neighbors[i].priority=(int)node.neighbors[i].distanceTraveled;
+                        frontierNodes.Enqueue(node.neighbors[i]);
+                    }
+                }
+            }
+        }
+
+    }
+
+    List<Node> GetPathNodes(Node endNode)
+    {
+        List<Node> path=new List<Node>();
+        if(endNode==null)
+        {
+            return path;
+        }
+        path.Add(endNode);
+        Node currentNode=endNode.previous;
+        while(currentNode!=null)
+        {
+            path.Insert(0,currentNode);
+            currentNode=currentNode.previous;
+        }
+        return path;
     }
 
 }

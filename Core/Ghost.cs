@@ -16,13 +16,8 @@ public class Ghost : MonoBehaviour
     [SerializeField] public float ghostSpeed;
     private Graph graph;
     public Node currentNode;
-    private Vector2 currentDirection;
+    public List<Node> nodePath;
 
-    // Update is called once per frame
-    void Update()
-    {
-        transform.position=Vector3.MoveTowards(transform.position,currentNode.position,ghostSpeed*Time.deltaTime);
-    }
 
     public void Init(string name,Node currentNode,Graph graph)
     {
@@ -32,10 +27,13 @@ public class Ghost : MonoBehaviour
         ghostState=State.Chase;
         
     }
-    public void MoveGhost(Node node,Vector2 direction)
+    public void MoveGhost(List<Node> nodePath)
     {
-        currentNode=node;
-        currentDirection=direction;
+        foreach(Node node in nodePath)
+        {
+            transform.position=Vector3.MoveTowards(transform.position,node.position,ghostSpeed*Time.deltaTime);
+            currentNode=node;
+        }
     }
     public void SwitchState()
     {
