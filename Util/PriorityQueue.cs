@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PriorityQueue <T> where T:IComparable
+public class PriorityQueue <T> where T:IComparable<T>
 {
     List<T> data;
     public int Count{get{return data.Count;}}
@@ -50,7 +50,7 @@ public class PriorityQueue <T> where T:IComparable
             {
                 childIndex=rightChild;
             }
-            if(data[parentIndex].CompareTo(data[childindex])<=0)
+            if(data[parentIndex].CompareTo(data[childIndex])<=0)
             {
                 break;
             }
@@ -63,7 +63,7 @@ public class PriorityQueue <T> where T:IComparable
     }
     public T Peek()
     {
-        T fronItem=data[0];
+        T frontItem=data[0];
         return frontItem;
     }
     public bool Contains(T item)
