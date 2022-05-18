@@ -27,7 +27,7 @@ public class Ghost : MonoBehaviour
         ghostState=State.Chase;
         
     }
-    public void MoveGhost(List<Node> nodePath)
+    public void Move(List<Node> nodePath)
     {
         foreach(Node node in nodePath)
         {

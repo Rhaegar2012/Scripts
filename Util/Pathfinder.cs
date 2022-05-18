@@ -12,13 +12,25 @@ public class Pathfinder : MonoBehaviour
     List<Node> exploredNodes;
     List<Node> pathNodes;
     public bool isComplete=false;
+    [SerializeField] int iterationLimit;
     int iterations=0;
     public void Init(Graph graph, Node start, Node goal )
     {
+        if(start==null||goal==null||graph==null)
+        {
+            Debug.LogWarning("PATHFINDER Init error: missing components");
+            return;
+        }
+        if(start.nodeType==NodeType.Blocked||goal.nodeType==NodeType.Blocked)
+        {
+            Debug.LogWarning("PATHFINDER Init error: start and end nodes must be unblocked");
+            return;
+        }
         this.graph=graph;
         this.startNode=start;
         this.goalNode=goal;
         this.frontierNodes=new PriorityQueue<Node>();
+        frontierNodes.Enqueue(start);
         this.exploredNodes= new List<Node>();
         //Clears data from previous pathfinding
         for(int x=0;x<graph.width;x++)
@@ -39,10 +51,11 @@ public class Pathfinder : MonoBehaviour
     {
         while(!isComplete)
         {
+            iterations++;
             if(frontierNodes.Count>0)
             {
                 Node currentNode=frontierNodes.Dequeue();
-                iterations++;
+                
                 if(!exploredNodes.Contains(currentNode))
                 {
                     exploredNodes.Add(currentNode);
@@ -56,7 +69,13 @@ public class Pathfinder : MonoBehaviour
                 }
                 Debug.Log("Iterations: "+iterations.ToString());
             }
+            if(iterations>iterationLimit)
+            {
+                Debug.Log("Exited with iteration count");
+                break;
+            }
         }
+        Debug.Log("Exited Search loop");
         return pathNodes;
     }
     //Expand Frontier method (Dijkstra's Algorithm)

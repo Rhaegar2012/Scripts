@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         }
         if(ghosts!=null)
         {
-            //GhostMove();
+            GhostMove();
         }
         
     }
@@ -157,17 +157,23 @@ public class GameManager : MonoBehaviour
 
     void GhostMove()
     {
-        if(ghosts!=null)
-        {
-            foreach(GameObject instance in ghosts)
-            {
-                Ghost ghost = instance.GetComponent<Ghost>();
-                pathfinder.Init(graph,ghost.currentNode,pacMan.currentNode);
-                List<Node> nodePath= pathfinder.SearchRoutine();
-                ghost.MoveGhost(nodePath);
-
-            }
+        GameObject instance=ghosts[0];
+        Ghost ghost = instance.GetComponent<Ghost>();
+        Debug.Log("Pacman Node");
+        Debug.Log(pacMan.currentNode.position);
+        Debug.Log("Ghost Initial Position");
+        Debug.Log(ghost.currentNode.position);
+        pathfinder.Init(graph,ghost.currentNode,pacMan.currentNode);
+        List<Node> nodePath= pathfinder.SearchRoutine();
+        ghost.Move(nodePath);
+        Debug.Log("Node Path Data");
+        Debug.Log(nodePath.Count);
+        foreach(Node node in nodePath)
+        {   
+            Debug.Log(node.position);
         }
+
+        
     }
 
 
