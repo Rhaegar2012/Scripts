@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Pathfinder : MonoBehaviour
+public class Pathfinder:MonoBehaviour
 {
     private Node startNode;
     private Node goalNode;
@@ -63,19 +63,15 @@ public class Pathfinder : MonoBehaviour
                 ExpandFrontier(currentNode);
                 if(frontierNodes.Contains(goalNode))
                 {
-                    Debug.Log("Accessed Search exit");
                     pathNodes=GetPathNodes(goalNode);
                     isComplete=true;
                 }
-                Debug.Log("Iterations: "+iterations.ToString());
             }
             if(iterations>iterationLimit)
             {
-                Debug.Log("Exited with iteration count");
                 break;
             }
         }
-        Debug.Log("Exited Search loop");
         return pathNodes;
     }
     //Expand Frontier method (Dijkstra's Algorithm)

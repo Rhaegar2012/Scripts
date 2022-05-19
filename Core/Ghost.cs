@@ -15,25 +15,37 @@ public class Ghost : MonoBehaviour
     [Header("Movement")]
     [SerializeField] public float ghostSpeed;
     private Graph graph;
+    private Pathfinder pathfinder;
     public Node currentNode;
     public List<Node> nodePath;
 
 
+    void Update()
+    {
+        
+        
+    } 
     public void Init(string name,Node currentNode,Graph graph)
     {
         this.ghostName=name;
         this.currentNode=currentNode;
         this.graph=graph;
         ghostState=State.Chase;
+        pathfinder=GetComponent<Pathfinder>();
+
+
         
     }
-    public void Move(List<Node> nodePath)
+    public void Move(Node goalNode)
     {
+
+        pathfinder.Init(graph,currentNode,goalNode);
+        nodePath=pathfinder.SearchRoutine();
         foreach(Node node in nodePath)
         {
             transform.position=Vector3.MoveTowards(transform.position,node.position,ghostSpeed*Time.deltaTime);
-            currentNode=node;
         }
+        
     }
     public void SwitchState()
     {

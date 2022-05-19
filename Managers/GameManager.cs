@@ -15,8 +15,6 @@ public class GameManager : MonoBehaviour
     [Header("Ghost Initialization")]
     [SerializeField] GameObject[] ghostPrefabs;
     [SerializeField] Vector3[] ghostStartNodes;
-    [Header("Pathfinder")]
-    [SerializeField] Pathfinder pathfinder;
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<GameObject> ghosts;
@@ -46,7 +44,7 @@ public class GameManager : MonoBehaviour
         }
         if(ghosts!=null)
         {
-            GhostMove();
+            MoveGhosts();
         }
         
     }
@@ -151,30 +149,28 @@ public class GameManager : MonoBehaviour
         if(graph.IsValidNode(trialDirection,switchNode))
         {
             movementDirection=trialDirection;
+            pacMan.currentPath.Clear();
             PacManMove(movementDirection,switchNode);
         }
     }
 
-    void GhostMove()
+    void MoveGhosts()
     {
-        GameObject instance=ghosts[0];
-        Ghost ghost = instance.GetComponent<Ghost>();
-        Debug.Log("Pacman Node");
-        Debug.Log(pacMan.currentNode.position);
-        Debug.Log("Ghost Initial Position");
-        Debug.Log(ghost.currentNode.position);
-        pathfinder.Init(graph,ghost.currentNode,pacMan.currentNode);
-        List<Node> nodePath= pathfinder.SearchRoutine();
-        ghost.Move(nodePath);
-        Debug.Log("Node Path Data");
-        Debug.Log(nodePath.Count);
-        foreach(Node node in nodePath)
-        {   
-            Debug.Log(node.position);
-        }
-
-        
+       GameObject ghostInstance=ghosts[0];
+       Ghost ghost= ghostInstance.GetComponent<Ghost>();
+       int index=0;
+       Node goalNode= pacMan.currentPath[index];
+       Debug.Log(goalNode.position);
+       ghost.Move(goalNode);
+       if(ghost.currentNode.position==goalNode.position)
+       {
+            index++;
+       }
     }
+       
+       
+        
+    
 
 
 

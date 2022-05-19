@@ -10,6 +10,7 @@ public class Pacman : MonoBehaviour
     public Node currentNode;
     private Rigidbody2D myRigidBody;
     private Vector2 currentDirection;
+    public List<Node> currentPath;
     //Unity event
     void Update()
     {
@@ -22,6 +23,7 @@ public class Pacman : MonoBehaviour
         graph=maze;
         myRigidBody=GetComponent<Rigidbody2D>();
         myRigidBody.velocity*=pacmanSpeed;
+        currentPath=new List<Node>();
         
     }
 
@@ -29,6 +31,8 @@ public class Pacman : MonoBehaviour
     {
         currentDirection=direction;
         currentNode=node;
+        currentPath.Add(currentNode);
+        
     }
     void OnTriggerEnter2D(Collider2D other)
     {
