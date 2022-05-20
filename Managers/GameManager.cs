@@ -15,9 +15,12 @@ public class GameManager : MonoBehaviour
     [Header("Ghost Initialization")]
     [SerializeField] GameObject[] ghostPrefabs;
     [SerializeField] Vector3[] ghostStartNodes;
+    [Header("Pathfinder")]
+    [SerializeField] Pathfinder pathfinder;
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<GameObject> ghosts;
+    private int pathIndex=1;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
@@ -156,16 +159,38 @@ public class GameManager : MonoBehaviour
 
     void MoveGhosts()
     {
+
        GameObject ghostInstance=ghosts[0];
        Ghost ghost= ghostInstance.GetComponent<Ghost>();
-       int index=0;
-       Node goalNode= pacMan.currentPath[index];
-       Debug.Log(goalNode.position);
-       ghost.Move(goalNode);
-       if(ghost.currentNode.position==goalNode.position)
+       Debug.Log($"Ghost current node {ghost.currentNode.position}");
+       Debug.Log($"Pacman current node {pacMan.currentNode.position}");
+       List<Node> nodePath = CalculatePath(ghost.currentNode,pacMan.currentNode);
+       Debug.Log("Node Path");
+       foreach(Node node in nodePath)
        {
-            index++;
+           Debug.Log($"Path Node: {node.position}");
        }
+       int currentIndex=nodePath.IndexOf(ghost.currentNode);
+       Node goalNode=nodePath[1];
+       if(currentIndex<nodePath.Count-1)
+       {
+           goalNode=nodePath[currentIndex+1];
+       }
+       else
+       {
+         goalNode=nodePath[currentIndex];
+       }
+       Debug.Log($"Goal Node: {goalNode.position}");
+       ghost.Move(goalNode);
+    
+    }
+    List<Node> CalculatePath(Node startNode,Node targetNode )
+    {
+       Debug.Log($"Start Node {startNode.position}");
+       Debug.Log($"End Node {targetNode.position}");
+       pathfinder.Init(graph,startNode,targetNode);
+       List<Node> nodePath=pathfinder.SearchRoutine();
+       return nodePath;
     }
        
        

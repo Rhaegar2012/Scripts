@@ -4,7 +4,7 @@ using UnityEngine;
 public enum State
 {
     Chase=1,
-    Flee=0
+    Scatter=0
 }
 public class Ghost : MonoBehaviour
 {
@@ -15,7 +15,6 @@ public class Ghost : MonoBehaviour
     [Header("Movement")]
     [SerializeField] public float ghostSpeed;
     private Graph graph;
-    private Pathfinder pathfinder;
     public Node currentNode;
     public List<Node> nodePath;
 
@@ -31,27 +30,22 @@ public class Ghost : MonoBehaviour
         this.currentNode=currentNode;
         this.graph=graph;
         ghostState=State.Chase;
-        pathfinder=GetComponent<Pathfinder>();
+    
 
 
         
     }
     public void Move(Node goalNode)
     {
-
-        pathfinder.Init(graph,currentNode,goalNode);
-        nodePath=pathfinder.SearchRoutine();
-        foreach(Node node in nodePath)
-        {
-            transform.position=Vector3.MoveTowards(transform.position,node.position,ghostSpeed*Time.deltaTime);
-        }
         
+        transform.position=Vector3.MoveTowards(transform.position,goalNode.position,ghostSpeed*Time.deltaTime);
+        currentNode=goalNode;
     }
     public void SwitchState()
     {
         if(ghostState==State.Chase)
         {
-            ghostState=State.Flee;
+            ghostState=State.Scatter;
         }
         else
         {
