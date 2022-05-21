@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<GameObject> ghosts;
-    private int pathIndex=1;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
@@ -162,14 +161,14 @@ public class GameManager : MonoBehaviour
 
        GameObject ghostInstance=ghosts[0];
        Ghost ghost= ghostInstance.GetComponent<Ghost>();
-       Debug.Log($"Ghost current node {ghost.currentNode.position}");
-       Debug.Log($"Pacman current node {pacMan.currentNode.position}");
+       //Debug.Log($"Ghost current node {ghost.currentNode.position}");
+       //Debug.Log($"Pacman current node {pacMan.currentNode.position}");
        List<Node> nodePath = CalculatePath(ghost.currentNode,pacMan.currentNode);
-       Debug.Log("Node Path");
-       foreach(Node node in nodePath)
+       //Debug.Log("Node Path");
+       /* foreach(Node node in nodePath)
        {
            Debug.Log($"Path Node: {node.position}");
-       }
+       } */
        int currentIndex=nodePath.IndexOf(ghost.currentNode);
        Node goalNode=nodePath[1];
        if(currentIndex<nodePath.Count-1)
@@ -186,8 +185,7 @@ public class GameManager : MonoBehaviour
     }
     List<Node> CalculatePath(Node startNode,Node targetNode )
     {
-       Debug.Log($"Start Node {startNode.position}");
-       Debug.Log($"End Node {targetNode.position}");
+      
        pathfinder.Init(graph,startNode,targetNode);
        List<Node> nodePath=pathfinder.SearchRoutine();
        return nodePath;

@@ -15,14 +15,14 @@ public class Ghost : MonoBehaviour
     [Header("Movement")]
     [SerializeField] public float ghostSpeed;
     private Graph graph;
+    private Vector3 direction;
     public Node currentNode;
     public List<Node> nodePath;
 
 
     void Update()
     {
-        
-        
+       transform.position=Vector3.MoveTowards(transform.position,currentNode.position,ghostSpeed*Time.deltaTime);
     } 
     public void Init(string name,Node currentNode,Graph graph)
     {
@@ -37,8 +37,14 @@ public class Ghost : MonoBehaviour
     }
     public void Move(Node goalNode)
     {
-        
-        transform.position=Vector3.MoveTowards(transform.position,goalNode.position,ghostSpeed*Time.deltaTime);
+        float distance=Vector3.Distance(goalNode.position,transform.position);
+        float distanceTolerance=0.05f;
+        while(distance>distanceTolerance)
+        {
+            Vector3 direction=(goalNode.position-currentNode.position).normalized;
+            transform.position+=direction*ghostSpeed*Time.deltaTime;
+            distance=Vector3.Distance(goalNode.position,transform.position);
+        }
         currentNode=goalNode;
     }
     public void SwitchState()
