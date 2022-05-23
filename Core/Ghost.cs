@@ -14,16 +14,13 @@ public class Ghost : MonoBehaviour
     //Movement Variables
     [Header("Movement")]
     [SerializeField] public float ghostSpeed;
+    [SerializeField] private float moveTime=0.5f;
     private Graph graph;
     private Vector3 direction;
     public Node currentNode;
     public List<Node> nodePath;
 
 
-    void Update()
-    {
-       transform.position=Vector3.MoveTowards(transform.position,currentNode.position,ghostSpeed*Time.deltaTime);
-    } 
     public void Init(string name,Node currentNode,Graph graph)
     {
         this.ghostName=name;
@@ -37,16 +34,34 @@ public class Ghost : MonoBehaviour
     }
     public void Move(Node goalNode)
     {
-        float distance=Vector3.Distance(goalNode.position,transform.position);
-        float distanceTolerance=0.05f;
-        while(distance>distanceTolerance)
-        {
-            Vector3 direction=(goalNode.position-currentNode.position).normalized;
-            transform.position+=direction*ghostSpeed*Time.deltaTime;
-            distance=Vector3.Distance(goalNode.position,transform.position);
-        }
-        currentNode=goalNode;
+        StartCoroutine(MoveToNodeRoutine(goalNode));
     }
+    IEnumerator MoveToNodeRoutine(Node goalNode)
+    {
+        float elapsedTime=0;
+        moveTime=Mathf.Clamp(moveTime,0.1f,5f);
+        while(elapsedTime<moveTime && goalNode!=null && !HasReachedNode(goalNode))
+        {
+            elapsedTime+=Time.deltaTime;
+            float lerpValue=Mathf.Clamp(elapsedTime/moveTime,0f,1f);
+            Vector3 targetPos=goalNode.position;
+            transform.position=Vector3.Lerp(currentNode.position,targetPos,lerpValue);
+            //if over halfway change parent to next node
+            if(lerpValue>0.51f)
+            {
+                currentNode=goalNode;
+            }
+            yield return null;
+        }
+        
+    }
+    private bool HasReachedNode(Node node)
+    {
+        float distanceSqr=(node.position-transform.position).sqrMagnitude;
+        return(distanceSqr<0.01f);
+    }
+
+
     public void SwitchState()
     {
         if(ghostState==State.Chase)

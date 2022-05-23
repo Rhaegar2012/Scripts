@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject pacmanPrefab;
     [SerializeField] Vector3 pacmanStartNode;
     [SerializeField] Vector3 movementDirection;
+    private  Node  pacmanStart;
     [Header("Ghost Initialization")]
     [SerializeField] GameObject[] ghostPrefabs;
     [SerializeField] Vector3[] ghostStartNodes;
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<GameObject> ghosts;
+    private List<Node> path;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour
         CreateMaze();
         DrawPacMan();
         DrawGhosts();
+        path= new List<Node>();
         
     }
 
@@ -71,6 +74,7 @@ public class GameManager : MonoBehaviour
             pacMan=pacManObject.GetComponent<Pacman>();
             pacMan.Init(graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y],graph);
         }
+        pacmanStart=graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y];
     }
     void DrawGhosts()
     {
@@ -158,30 +162,25 @@ public class GameManager : MonoBehaviour
 
     void MoveGhosts()
     {
-
-       GameObject ghostInstance=ghosts[0];
-       Ghost ghost= ghostInstance.GetComponent<Ghost>();
-       //Debug.Log($"Ghost current node {ghost.currentNode.position}");
-       //Debug.Log($"Pacman current node {pacMan.currentNode.position}");
-       List<Node> nodePath = CalculatePath(ghost.currentNode,pacMan.currentNode);
-       //Debug.Log("Node Path");
-       /* foreach(Node node in nodePath)
-       {
-           Debug.Log($"Path Node: {node.position}");
-       } */
-       int currentIndex=nodePath.IndexOf(ghost.currentNode);
-       Node goalNode=nodePath[1];
-       if(currentIndex<nodePath.Count-1)
-       {
-           goalNode=nodePath[currentIndex+1];
-       }
-       else
-       {
-         goalNode=nodePath[currentIndex];
-       }
-       Debug.Log($"Goal Node: {goalNode.position}");
-       ghost.Move(goalNode);
+        GameObject instance=ghosts[0];
+        Ghost ghost=instance.GetComponent<Ghost>();
+        
+        
+        //Updates path if pacman moved
+        
+        path=CalculatePath(ghost.currentNode,pacMan.currentNode);
+        pacmanStart=pacMan.currentNode;
+        int  pathIndex=path.IndexOf(ghost.currentNode);
+        Debug.Log($"Index {pathIndex} ");
+        if(pathIndex<path.Count-1)
+        {
+            Node goalNode=path[pathIndex+1];
+            ghost.Move(goalNode);
+        }
     
+        
+        
+      
     }
     List<Node> CalculatePath(Node startNode,Node targetNode )
     {
