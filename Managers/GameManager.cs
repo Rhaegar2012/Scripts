@@ -175,8 +175,7 @@ public class GameManager : MonoBehaviour
         if(graph.IsValidNode(trialDirection,switchNode))
         {
             movementDirection=trialDirection;
-            Debug.Log("PACMAN SWTICHES DIRECTION");
-            //PacManMove(movementDirection,switchNode);
+            PacManMove(movementDirection,switchNode);
         }
     }
 

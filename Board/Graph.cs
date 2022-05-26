@@ -19,10 +19,6 @@ public class Graph : MonoBehaviour
         new Vector2(1,0),
         new Vector2(0,1),
         new Vector2(0,-1)
-        //new Vector2(-1,1),
-        //new Vector2(1,1),
-        //new Vector2(-1,-1),
-        //new Vector2(1,-1),
     };
     //GraphMethods
     //Constructs graphs with nodes and node relationships
