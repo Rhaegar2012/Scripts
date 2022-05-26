@@ -21,6 +21,7 @@ public class Ghost : MonoBehaviour
     public List<Node> nodePath;
 
 
+
     public void Init(string name,Node currentNode,Graph graph)
     {
         this.ghostName=name;
@@ -39,6 +40,7 @@ public class Ghost : MonoBehaviour
     IEnumerator MoveToNodeRoutine(Node goalNode)
     {
         float elapsedTime=0;
+        int breakIterations=0;
         moveTime=Mathf.Clamp(moveTime,0.1f,5f);
         while(elapsedTime<moveTime && goalNode!=null && !HasReachedNode(goalNode))
         {
@@ -49,16 +51,20 @@ public class Ghost : MonoBehaviour
             //if over halfway change parent to next node
             if(lerpValue>0.51f)
             {
-                currentNode=goalNode;
+               currentNode=goalNode;
+            }
+            breakIterations++;
+            if(breakIterations>100)
+            {
+                break;
             }
             yield return null;
-        }
-        
+        }        
     }
     private bool HasReachedNode(Node node)
     {
         float distanceSqr=(node.position-transform.position).sqrMagnitude;
-        return(distanceSqr<0.01f);
+        return(distanceSqr<0.05f);
     }
 
 
@@ -73,5 +79,10 @@ public class Ghost : MonoBehaviour
             ghostState=State.Chase;
         }
 
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+    
+        //TODO
     }
 }

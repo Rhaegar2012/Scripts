@@ -37,7 +37,7 @@ public class Pathfinder:MonoBehaviour
         {
             for(int y=0;y<graph.height;y++)
             {
-                //graph.nodes[x,y].Reset();
+                graph.nodes[x,y].Reset();
             }
         }
         isComplete=false;

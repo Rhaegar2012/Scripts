@@ -21,7 +21,13 @@ public class GameManager : MonoBehaviour
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<GameObject> ghosts;
+    private Ghost blinky;
+    private Ghost clyde;
+    private Ghost inky;
+    private Ghost pinky;
     private List<Node> path;
+    private Node chaseNode;
+    private bool goalReached=true;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
@@ -34,7 +40,7 @@ public class GameManager : MonoBehaviour
         CreateMaze();
         DrawPacMan();
         DrawGhosts();
-        path= new List<Node>();
+    
         
     }
 
@@ -47,10 +53,14 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection, pacMan.currentNode);
             
         }
-        if(ghosts!=null)
+        if(goalReached)
         {
-            MoveGhosts();
+            Debug.Log("Accessed");
+            chaseNode=pacMan.currentNode;
+            path=CalculatePath(blinky.currentNode,chaseNode);
+            goalReached=false;
         }
+        MoveGhosts(path);
         
     }
     //Draw GameObjects
@@ -89,6 +99,13 @@ public class GameManager : MonoBehaviour
             ghosts.Add(instance);
 
         }
+
+        blinky=ghosts[0].GetComponent<Ghost>();
+        clyde=ghosts[1].GetComponent<Ghost>();
+        inky=ghosts[2].GetComponent<Ghost>();
+        pinky=ghosts[3].GetComponent<Ghost>();
+        //chaseNode=graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y];
+    
     }
     GameObject InstantiateGameObject(Vector3 nodePosition,GameObject gameObjectPrefab)
     {
@@ -100,10 +117,12 @@ public class GameManager : MonoBehaviour
         if(Input.GetButtonDown("MoveLeft"))
         {
             SwitchDirection("left");
+            
         }
         if(Input.GetButton("MoveRight"))
         {
             SwitchDirection("right");
+            
         }
         if(Input.GetButton("MoveUp"))
         {
@@ -113,6 +132,7 @@ public class GameManager : MonoBehaviour
         {
             SwitchDirection("down");
         }
+         
 
     }
 
@@ -155,38 +175,42 @@ public class GameManager : MonoBehaviour
         if(graph.IsValidNode(trialDirection,switchNode))
         {
             movementDirection=trialDirection;
-            pacMan.currentPath.Clear();
-            PacManMove(movementDirection,switchNode);
+            Debug.Log("PACMAN SWTICHES DIRECTION");
+            //PacManMove(movementDirection,switchNode);
         }
     }
 
-    void MoveGhosts()
+    void MoveGhosts(List<Node> path)
     {
-        GameObject instance=ghosts[0];
-        Ghost ghost=instance.GetComponent<Ghost>();
-        
-        
-        //Updates path if pacman moved
-        
-        path=CalculatePath(ghost.currentNode,pacMan.currentNode);
-        pacmanStart=pacMan.currentNode;
-        int  pathIndex=path.IndexOf(ghost.currentNode);
-        Debug.Log($"Index {pathIndex} ");
-        if(pathIndex<path.Count-1)
+        if(path!=null)
         {
-            Node goalNode=path[pathIndex+1];
-            ghost.Move(goalNode);
+             //Debug.Log($"Ghost current node (movement){blinky.currentNode.position}");
+             int pathIndex=path.IndexOf(blinky.currentNode);
+             if(pathIndex==path.Count-1)
+             {
+                 Debug.Log("END OF PATH REACHED");
+                 goalReached=true;
+             }
+             else
+             {
+          
+                Node goalNode=path[pathIndex+1];
+                blinky.Move(goalNode);
+                
+             }
+         
         }
-    
-        
-        
+
+
       
     }
     List<Node> CalculatePath(Node startNode,Node targetNode )
     {
-      
+       Debug.Log($"Start Node {startNode.position}");
+       Debug.Log($"Target Node {targetNode.position}");
        pathfinder.Init(graph,startNode,targetNode);
        List<Node> nodePath=pathfinder.SearchRoutine();
+       Debug.Log($"Path Length {nodePath.Count}");
        return nodePath;
     }
        

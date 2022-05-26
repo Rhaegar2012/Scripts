@@ -11,6 +11,7 @@ public class Pacman : MonoBehaviour
     private Rigidbody2D myRigidBody;
     private Vector2 currentDirection;
     public List<Node> currentPath;
+
     //Unity event
     void Update()
     {
