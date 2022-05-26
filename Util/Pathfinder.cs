@@ -57,7 +57,7 @@ public class Pathfinder:MonoBehaviour
             if(frontierNodes.Count>0)
             {
                 Node currentNode=frontierNodes.Dequeue();
-                //Debug.Log($"search current node {currentNode.position}");
+                Debug.Log($"search current node {currentNode.position}");
                 
                 if(!exploredNodes.Contains(currentNode))
                 {
@@ -66,6 +66,7 @@ public class Pathfinder:MonoBehaviour
                 ExpandFrontierAStar(currentNode);
                 if(frontierNodes.Contains(goalNode))
                 {
+                    Debug.Log("Found target node");
                     pathNodes=GetPathNodes(goalNode);
                     isComplete=true;
                 }
@@ -118,7 +119,9 @@ public class Pathfinder:MonoBehaviour
                     if(float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)||
                     newDistanceTraveled<node.neighbors[i].distanceTraveled)
                     {
+                        //Debug.Log($"Previous node added to {node.neighbors[i].position}");
                         node.neighbors[i].previous=node;
+                        //Debug.Log($"Previous node added {node.position}");
                         node.neighbors[i].distanceTraveled=newDistanceTraveled;
                     }
                     if(!frontierNodes.Contains(node.neighbors[i])&&graph!=null)
@@ -140,12 +143,19 @@ public class Pathfinder:MonoBehaviour
             Debug.Log("Returned empty path");
             return path;
         }
+        //Debug.Log($"End node position {endNode.position}");
         path.Add(endNode);
         Node currentNode=endNode.previous;
+        if(currentNode==null)
+        {
+            Debug.Log("path node is null");
+        }
         while(currentNode!=null)
         {
+            Debug.Log("Path loop accessed");
             path.Insert(0,currentNode);
             currentNode=currentNode.previous;
+            //Debug.Log($"backtracking node position {currentNode.position}");
         }
         return path;
     }

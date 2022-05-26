@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
         clyde=ghosts[1].GetComponent<Ghost>();
         inky=ghosts[2].GetComponent<Ghost>();
         pinky=ghosts[3].GetComponent<Ghost>();
-        //chaseNode=graph.nodes[(int)pacmanStartNode.x,(int)pacmanStartNode.y];
+        
     
     }
     GameObject InstantiateGameObject(Vector3 nodePosition,GameObject gameObjectPrefab)
