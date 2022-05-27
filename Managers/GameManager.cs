@@ -21,18 +21,25 @@ public class GameManager : MonoBehaviour
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<GameObject> ghosts;
+    private List<Ghost> ghostScripts;
     private Ghost blinky;
     private Ghost clyde;
     private Ghost inky;
     private Ghost pinky;
     private List<Node> path;
+    private List<Node> clydePath;
+    private List<Node> inkyPath;
+    private List<Node> pinkyPath;
     private Node chaseNode;
+    private Node clydeChaseNode;
+    private Node inkyChaseNode;
+    private Node pinkyChaseNode;
     private bool goalReached=true;
+    private bool clydeGoalReached=true;
+    private bool inkyGoalReached=true;
+    private bool pinkyGoalReached=true;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
-
-    
-    
 
     // Start is called before the first frame update
     void Start()
@@ -53,15 +60,12 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection, pacMan.currentNode);
             
         }
-        if(goalReached)
-        {
-            Debug.Log("Accessed");
-            chaseNode=pacMan.currentNode;
-            path=CalculatePath(blinky.currentNode,chaseNode);
-            goalReached=false;
-        }
-        MoveGhosts(path);
-        
+        GhostPaths();
+        MoveGhosts(path,blinky,goalReached);
+        MoveGhosts(inkyPath,inky,inkyGoalReached);
+        MoveGhosts(clydePath,clyde,clydeGoalReached);
+        MoveGhosts(pinkyPath,pinky,pinkyGoalReached);
+
     }
     //Draw GameObjects
     void CreateMaze()
@@ -89,6 +93,7 @@ public class GameManager : MonoBehaviour
     void DrawGhosts()
     {
         ghosts= new List<GameObject>();
+        ghostScripts=new List<Ghost>();
         
         for(int i=0;i<ghostPrefabs.Length;i++)
         {
@@ -97,7 +102,7 @@ public class GameManager : MonoBehaviour
             Node startNode=graph.nodes[(int)ghostStartNodes[i].x,(int)ghostStartNodes[i].y];
             ghost.Init(ghostNames[i],startNode,graph);
             ghosts.Add(instance);
-
+            ghostScripts.Add(ghost);
         }
 
         blinky=ghosts[0].GetComponent<Ghost>();
@@ -111,6 +116,27 @@ public class GameManager : MonoBehaviour
     {
          GameObject instance=Instantiate(gameObjectPrefab,nodePosition,Quaternion.identity);
          return instance;
+    }
+    Node GetChaseNode(string name)
+    {
+        if (name=="Blinky")
+        {
+            return pacMan.currentNode;
+        }
+        if(name=="Clyde")
+        {
+            return pacMan.currentNode;
+        }
+        if(name=="Inky")
+        {
+            return pacMan.currentNode;
+        }
+        if(name=="Pinky")
+        {
+            return pacMan.currentNode;
+        }
+        return pacMan.currentNode;
+        
     }
     void PlayerInput()
     {
@@ -178,26 +204,55 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection,switchNode);
         }
     }
+    void GhostPaths()
+    {
+        if(goalReached)
+        {
+            Debug.Log("Blinky updates path");
+            chaseNode=GetChaseNode(blinky.name);
+            path=CalculatePath(blinky.currentNode,chaseNode);
+            goalReached=false;
+        }
+        if(pinkyGoalReached)
+        {
+            Debug.Log("Inky updates path");
+            chaseNode=GetChaseNode(pinky.name);
+            pinkyPath=CalculatePath(inky.currentNode,chaseNode);
+            pinkyGoalReached=false;
+        }
+        if(inkyGoalReached)
+        {
+            Debug.Log("Pinky updates path");
+            chaseNode=GetChaseNode(pinky.name);
+            inkyPath=CalculatePath(pinky.currentNode,chaseNode);
+            inkyGoalReached=false;
+        }
+        if(clydeGoalReached)
+        {
+            Debug.Log("Clyde updates path");
+            chaseNode=GetChaseNode(clyde.name);
+            clydePath=CalculatePath(clyde.currentNode,chaseNode);
+            clydeGoalReached=false;
+        }
 
-    void MoveGhosts(List<Node> path)
+
+    }
+    void MoveGhosts(List<Node> path,Ghost ghost,bool goal)
     {
         if(path!=null)
         {
              //Debug.Log($"Ghost current node (movement){blinky.currentNode.position}");
-             int pathIndex=path.IndexOf(blinky.currentNode);
+             int pathIndex=path.IndexOf(ghost.currentNode);
              if(pathIndex==path.Count-1)
              {
-                 Debug.Log("END OF PATH REACHED");
-                 goalReached=true;
+                 goal=true;
              }
              else
              {
           
                 Node goalNode=path[pathIndex+1];
-                blinky.Move(goalNode);
-                
+                ghost.Move(goalNode);    
              }
-         
         }
 
 
@@ -205,11 +260,11 @@ public class GameManager : MonoBehaviour
     }
     List<Node> CalculatePath(Node startNode,Node targetNode )
     {
-       Debug.Log($"Start Node {startNode.position}");
-       Debug.Log($"Target Node {targetNode.position}");
+       //Debug.Log($"Start Node {startNode.position}");
+       //Debug.Log($"Target Node {targetNode.position}");
        pathfinder.Init(graph,startNode,targetNode);
        List<Node> nodePath=pathfinder.SearchRoutine();
-       Debug.Log($"Path Length {nodePath.Count}");
+       //Debug.Log($"Path Length {nodePath.Count}");
        return nodePath;
     }
        

@@ -11,6 +11,7 @@ public class Pathfinder:MonoBehaviour
     PriorityQueue<Node> frontierNodes;
     List<Node> exploredNodes;
     List<Node> pathNodes;
+    List<Node> aStarNodes;
     public bool isComplete=false;
     [SerializeField] int iterationLimit;
     int iterations=0;
@@ -30,9 +31,10 @@ public class Pathfinder:MonoBehaviour
         this.startNode=start;
         this.goalNode=goal;
         this.frontierNodes=new PriorityQueue<Node>();
-        Debug.Log($"search start node {startNode.position}");
+        //Debug.Log($"search start node {startNode.position}");
         frontierNodes.Enqueue(start);
         this.exploredNodes= new List<Node>();
+        this.aStarNodes= new List<Node>();
         //Clears data from previous pathfinding
         for(int x=0;x<graph.width;x++)
         {
@@ -41,12 +43,13 @@ public class Pathfinder:MonoBehaviour
                 graph.nodes[x,y].Reset();
             }
         }
+        aStarNodes.Clear();
         isComplete=false;
         iterations=0;
         startNode.distanceTraveled=0;
 
     }
-
+  
     //Search Routine 
     public List<Node> SearchRoutine()
     {
@@ -57,16 +60,17 @@ public class Pathfinder:MonoBehaviour
             if(frontierNodes.Count>0)
             {
                 Node currentNode=frontierNodes.Dequeue();
-                Debug.Log($"search current node {currentNode.position}");
+                //Debug.Log($"search current node {currentNode.position}");
                 
                 if(!exploredNodes.Contains(currentNode))
                 {
                     exploredNodes.Add(currentNode);
                 }
                 ExpandFrontierAStar(currentNode);
+                aStarNodes.Add(currentNode);
                 if(frontierNodes.Contains(goalNode))
                 {
-                    Debug.Log("Found target node");
+                    //Debug.Log("Found target node");
                     pathNodes=GetPathNodes(goalNode);
                     isComplete=true;
                 }
@@ -140,7 +144,6 @@ public class Pathfinder:MonoBehaviour
         List<Node> path=new List<Node>();
         if(endNode==null)
         {
-            Debug.Log("Returned empty path");
             return path;
         }
         //Debug.Log($"End node position {endNode.position}");
@@ -148,11 +151,11 @@ public class Pathfinder:MonoBehaviour
         Node currentNode=endNode.previous;
         if(currentNode==null)
         {
-            Debug.Log("path node is null");
+            return aStarNodes;
         }
         while(currentNode!=null)
         {
-            Debug.Log("Path loop accessed");
+            //Debug.Log("Path loop accessed");
             path.Insert(0,currentNode);
             currentNode=currentNode.previous;
             //Debug.Log($"backtracking node position {currentNode.position}");
