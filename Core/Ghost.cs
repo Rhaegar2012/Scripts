@@ -19,8 +19,7 @@ public class Ghost : MonoBehaviour
     private Vector3 direction;
     public Node currentNode;
     public List<Node> nodePath;
-
-
+    public bool reachedPathEnd;
 
     public void Init(string name,Node currentNode,Graph graph)
     {
@@ -28,10 +27,7 @@ public class Ghost : MonoBehaviour
         this.currentNode=currentNode;
         this.graph=graph;
         ghostState=State.Chase;
-    
-
-
-        
+        reachedPathEnd=true;
     }
     public void Move(Node goalNode)
     {
@@ -61,12 +57,11 @@ public class Ghost : MonoBehaviour
             yield return null;
         }        
     }
-    private bool HasReachedNode(Node node)
+    public bool HasReachedNode(Node node)
     {
         float distanceSqr=(node.position-transform.position).sqrMagnitude;
-        return(distanceSqr<0.05f);
+        return(distanceSqr<0.01f);
     }
-
 
     public void SwitchState()
     {

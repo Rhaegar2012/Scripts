@@ -82,33 +82,6 @@ public class Pathfinder:MonoBehaviour
         }
         return pathNodes;
     }
-    //Expand Frontier method (Dijkstra's Algorithm)
-    void ExpandFrontier(Node node)
-    {
-        if(node!=null)
-        {
-            for(int i=0; i<node.neighbors.Count;i++)
-            {
-                if(!exploredNodes.Contains(node.neighbors[i]))
-                {
-                    float distanceToNeighbor=graph.GetNodeDistance(node,node.neighbors[i]);
-                    float newDistanceTraveled=distanceToNeighbor+node.distanceTraveled;
-                    if(float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)||
-                    newDistanceTraveled<node.neighbors[i].distanceTraveled)
-                    {
-                        node.neighbors[i].previous=node;
-                        node.neighbors[i].distanceTraveled=newDistanceTraveled;
-                    }
-                    if(!frontierNodes.Contains(node.neighbors[i]))
-                    {
-                        node.neighbors[i].priority=(int)node.neighbors[i].distanceTraveled;
-                        frontierNodes.Enqueue(node.neighbors[i]);
-                    }
-                }
-            }
-        }
-
-    }
     //Expand Frontier (A* Algorithm)
     void ExpandFrontierAStar(Node node)
     {
