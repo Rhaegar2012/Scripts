@@ -41,8 +41,10 @@ public class Pathfinder:MonoBehaviour
             for(int y=0;y<graph.height;y++)
             {
                 graph.nodes[x,y].Reset();
+                graph.nodes[x,y].distanceTraveled=Mathf.Infinity;
             }
         }
+        Debug.Log("Graph cleared!!!");
         aStarNodes.Clear();
         isComplete=false;
         iterations=0;
@@ -60,7 +62,7 @@ public class Pathfinder:MonoBehaviour
             if(frontierNodes.Count>0)
             {
                 Node currentNode=frontierNodes.Dequeue();
-                //Debug.Log($"search current node {currentNode.position}");
+                Debug.Log($"search current node {currentNode.position}");
                 
                 if(!exploredNodes.Contains(currentNode))
                 {
@@ -96,9 +98,9 @@ public class Pathfinder:MonoBehaviour
                     if(float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)||
                     newDistanceTraveled<node.neighbors[i].distanceTraveled)
                     {
-                        Debug.Log($"Previous node added to {node.neighbors[i].position}");
+                        //Debug.Log($"Previous node added to {node.neighbors[i].position}");
                         node.neighbors[i].previous=node;
-                        Debug.Log($"Previous node added {node.neighbors[i].previous.position}");
+                        //Debug.Log($"Previous node added {node.neighbors[i].previous.position}");
                         node.neighbors[i].distanceTraveled=newDistanceTraveled;
                     }
                     if(!frontierNodes.Contains(node.neighbors[i])&&graph!=null)
@@ -122,11 +124,12 @@ public class Pathfinder:MonoBehaviour
         //Debug.Log($"End node position {endNode.position}");
         path.Add(endNode);
         Node currentNode=endNode.previous;
-        if(currentNode==null)
+        //Debug.Log($"Previous Node {currentNode.position}");
+        /* if(currentNode==null)
         {
             currentNode=aStarNodes[aStarNodes.Count-1];
             Debug.Log($"Alternate path end node {currentNode.position}");
-        }
+        } */
         while(currentNode!=null)
         {
             Debug.Log("Path loop accessed");
