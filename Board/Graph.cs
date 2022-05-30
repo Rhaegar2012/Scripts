@@ -10,15 +10,16 @@ public class Graph : MonoBehaviour
     public int width{get  {return mapWidth;}}
     public int height{get {return mapHeight;}}
     public Node[,] nodes;
+    public List<Node> floor= new List<Node>();
     List<Node> walls= new List<Node>();
     private int[,] m_mazeData;
     //NodeDirections
     public static readonly Vector2[] allDirections=
     {
-        new Vector2(-1,0),
-        new Vector2(1,0),
-        new Vector2(0,1),
-        new Vector2(0,-1)
+        new Vector2(-1f,0f),
+        new Vector2(1f,0f),
+        new Vector2(0f,1f),
+        new Vector2(0f,-1f),
     };
     //GraphMethods
     //Constructs graphs with nodes and node relationships
@@ -39,6 +40,10 @@ public class Graph : MonoBehaviour
                 if(type==NodeType.Blocked)
                 {
                     walls.Add(newNode);
+                }
+                else if(type==NodeType.Open)
+                {
+                    floor.Add(newNode);
                 }
             }
         }

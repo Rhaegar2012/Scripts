@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] public MazeData mazeData;
     [SerializeField] public Graph graph;
     [SerializeField] public GraphView graphView;
+    [Header("Power ups")]
+    [SerializeField] public GameObject pelletPrefab;
+    [SerializeField] public GameObject pillPrefab;
+    [SerializeField] Vector3[] pillStartNodes;
     [Header("Pacman Initialization")]
     [SerializeField] GameObject pacmanPrefab;
     [SerializeField] Vector3 pacmanStartNode;
@@ -21,6 +25,7 @@ public class GameManager : MonoBehaviour
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<Ghost> ghosts;
+    private List<GameObject> pellets;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
 
 
@@ -30,8 +35,9 @@ public class GameManager : MonoBehaviour
         CreateMaze();
         DrawPacMan();
         DrawGhosts();
+        DrawPellets();
+        DrawPills();
     
-        
     }
 
     // Update is called once per frame
@@ -87,6 +93,23 @@ public class GameManager : MonoBehaviour
         }
    
     
+    }
+    void DrawPellets()
+    {
+        pellets=new List<GameObject>();
+        foreach(Node node in graph.floor)
+        {
+            GameObject instance=InstantiateGameObject(node.position,pelletPrefab);
+            pellets.Add(instance);
+        }
+    }
+    void DrawPills()
+    {
+        for(int i=0;i<pillStartNodes.Length;i++)
+        {
+            GameObject instance= InstantiateGameObject(pillStartNodes[i],pillPrefab);
+        }
+
     }
     GameObject InstantiateGameObject(Vector3 nodePosition,GameObject gameObjectPrefab)
     {
@@ -177,6 +200,7 @@ public class GameManager : MonoBehaviour
         if(graph.IsValidNode(trialDirection,switchNode))
         {
             movementDirection=trialDirection;
+            pacMan.currentPath.Clear();
             PacManMove(movementDirection,switchNode);
         }
     }
@@ -217,11 +241,11 @@ public class GameManager : MonoBehaviour
     }
     List<Node> CalculatePath(Node startNode,Node targetNode )
     {
-       //Debug.Log($"Start Node {startNode.position}");
-       //Debug.Log($"Target Node {targetNode.position}");
+       Debug.Log($"Start Node {startNode.position}");
+       Debug.Log($"Target Node {targetNode.position}");
        pathfinder.Init(graph,startNode,targetNode);
        List<Node> nodePath=pathfinder.SearchRoutine();
-       //Debug.Log($"Path Length {nodePath.Count}");
+       Debug.Log($"Path Length {nodePath.Count}");
        return nodePath;
     }
        

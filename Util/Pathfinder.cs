@@ -96,9 +96,9 @@ public class Pathfinder:MonoBehaviour
                     if(float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)||
                     newDistanceTraveled<node.neighbors[i].distanceTraveled)
                     {
-                        //Debug.Log($"Previous node added to {node.neighbors[i].position}");
+                        Debug.Log($"Previous node added to {node.neighbors[i].position}");
                         node.neighbors[i].previous=node;
-                        //Debug.Log($"Previous node added {node.position}");
+                        Debug.Log($"Previous node added {node.neighbors[i].previous.position}");
                         node.neighbors[i].distanceTraveled=newDistanceTraveled;
                     }
                     if(!frontierNodes.Contains(node.neighbors[i])&&graph!=null)
@@ -124,11 +124,12 @@ public class Pathfinder:MonoBehaviour
         Node currentNode=endNode.previous;
         if(currentNode==null)
         {
-            return aStarNodes;
+            currentNode=aStarNodes[aStarNodes.Count-1];
+            Debug.Log($"Alternate path end node {currentNode.position}");
         }
         while(currentNode!=null)
         {
-            //Debug.Log("Path loop accessed");
+            Debug.Log("Path loop accessed");
             path.Insert(0,currentNode);
             currentNode=currentNode.previous;
             //Debug.Log($"backtracking node position {currentNode.position}");
