@@ -31,7 +31,6 @@ public class Pathfinder:MonoBehaviour
         this.startNode=start;
         this.goalNode=goal;
         this.frontierNodes=new PriorityQueue<Node>();
-        //Debug.Log($"search start node {startNode.position}");
         frontierNodes.Enqueue(start);
         this.exploredNodes= new List<Node>();
         this.aStarNodes= new List<Node>();
@@ -44,7 +43,6 @@ public class Pathfinder:MonoBehaviour
                 graph.nodes[x,y].distanceTraveled=Mathf.Infinity;
             }
         }
-        Debug.Log("Graph cleared!!!");
         aStarNodes.Clear();
         isComplete=false;
         iterations=0;
@@ -58,12 +56,9 @@ public class Pathfinder:MonoBehaviour
         while(!isComplete)
         {
             iterations++;
-            //Debug.Log($"search iterations {iterations}");
             if(frontierNodes.Count>0)
             {
-                Node currentNode=frontierNodes.Dequeue();
-                Debug.Log($"search current node {currentNode.position}");
-                
+                Node currentNode=frontierNodes.Dequeue();        
                 if(!exploredNodes.Contains(currentNode))
                 {
                     exploredNodes.Add(currentNode);
@@ -72,7 +67,6 @@ public class Pathfinder:MonoBehaviour
                 aStarNodes.Add(currentNode);
                 if(frontierNodes.Contains(goalNode))
                 {
-                    //Debug.Log("Found target node");
                     pathNodes=GetPathNodes(goalNode);
                     isComplete=true;
                 }
@@ -98,9 +92,8 @@ public class Pathfinder:MonoBehaviour
                     if(float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)||
                     newDistanceTraveled<node.neighbors[i].distanceTraveled)
                     {
-                        //Debug.Log($"Previous node added to {node.neighbors[i].position}");
+                
                         node.neighbors[i].previous=node;
-                        //Debug.Log($"Previous node added {node.neighbors[i].previous.position}");
                         node.neighbors[i].distanceTraveled=newDistanceTraveled;
                     }
                     if(!frontierNodes.Contains(node.neighbors[i])&&graph!=null)
@@ -121,21 +114,12 @@ public class Pathfinder:MonoBehaviour
         {
             return path;
         }
-        //Debug.Log($"End node position {endNode.position}");
         path.Add(endNode);
         Node currentNode=endNode.previous;
-        //Debug.Log($"Previous Node {currentNode.position}");
-        /* if(currentNode==null)
-        {
-            currentNode=aStarNodes[aStarNodes.Count-1];
-            Debug.Log($"Alternate path end node {currentNode.position}");
-        } */
         while(currentNode!=null)
         {
-            Debug.Log("Path loop accessed");
             path.Insert(0,currentNode);
             currentNode=currentNode.previous;
-            //Debug.Log($"backtracking node position {currentNode.position}");
         }
         return path;
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,12 +23,27 @@ public class GameManager : MonoBehaviour
     [SerializeField] Vector3[] ghostStartNodes;
     [Header("Pathfinder")]
     [SerializeField] Pathfinder pathfinder;
+    [Header("Score values")]
+    [SerializeField] int pelletScore;
+    [SerializeField] int pillScore;
+    [SerializeField] int ghostScore;
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<Ghost> ghosts;
     private List<GameObject> pellets;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
-
+    private int score=0;
+    //Observer Events
+    void OnEnable()
+    {
+        Pellet.OnPelletEaten+=EatPellet;
+        Pill.OnPillEaten+=EatPill;
+    }
+    void OnDisable()
+    {
+        Pellet.OnPelletEaten-=EatPellet;
+        Pill.OnPillEaten-=EatPill;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -209,7 +225,6 @@ public class GameManager : MonoBehaviour
         List<Node> path= new List<Node>();
         if(ghost.reachedPathEnd)
         {
-            Debug.Log($"{ghost.name} updates path");
             Node chaseNode=GetChaseNode(ghost.name);
             path=CalculatePath(ghost.currentNode,chaseNode);
             ghost.reachedPathEnd=false;
@@ -226,7 +241,6 @@ public class GameManager : MonoBehaviour
     {
         if(path!=null)
         {
-             //Debug.Log($"Ghost current node (movement){blinky.currentNode.position}");
              int pathIndex=path.IndexOf(ghost.currentNode);
              if(pathIndex==path.Count-1)
              {
@@ -241,13 +255,21 @@ public class GameManager : MonoBehaviour
     }
     List<Node> CalculatePath(Node startNode,Node targetNode )
     {
-       Debug.Log($"Start Node {startNode.position}");
-       Debug.Log($"Target Node {targetNode.position}");
        pathfinder.Init(graph,startNode,targetNode);
        List<Node> nodePath=pathfinder.SearchRoutine();
-       Debug.Log($"Path Length {nodePath.Count}");
        return nodePath;
     }
+    void EatPellet()
+    {
+        score+=pelletScore;
+    
+    }
+    void EatPill()
+    {
+        score+=pillScore;
+        //TODO Ghost scatter state
+    }
+
        
        
         
