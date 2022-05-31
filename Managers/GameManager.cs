@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] Vector3[] ghostStartNodes;
     [Header("Pathfinder")]
     [SerializeField] Pathfinder pathfinder;
+    [Header("Scatter")]
+    [SerializeField] float scatterTime;
+    [SerializeField] Sprite scatterSprite;
     [Header("Score values")]
     [SerializeField] int pelletScore;
     [SerializeField] int pillScore;
@@ -67,8 +70,12 @@ public class GameManager : MonoBehaviour
         }
         foreach(Ghost ghost in ghosts)
         {
-            ghost.nodePath= GhostPath(ghost);
-            MoveGhost(ghost.nodePath,ghost);
+            if(ghost!=null)
+            {
+                ghost.nodePath= GhostPath(ghost);
+                MoveGhost(ghost.nodePath,ghost);
+            }
+          
         }
      
     }
@@ -132,23 +139,34 @@ public class GameManager : MonoBehaviour
          GameObject instance=Instantiate(gameObjectPrefab,nodePosition,Quaternion.identity);
          return instance;
     }
-    Node GetChaseNode(string name)
+    Node GetChaseNode(string name,State state)
     {
-        if (name=="Blinky")
+        if(state==State.Chase)
         {
-            return pacMan.currentNode;
+            if (name=="Blinky")
+            {
+                return pacMan.currentNode;
+            }
+            if(name=="Clyde")
+            {
+                return pacMan.currentNode;
+            }
+            if(name=="Inky")
+            {
+                return pacMan.currentNode;
+            }
+            if(name=="Pinky")
+            {
+                return pacMan.currentNode;
+            }
+
         }
-        if(name=="Clyde")
+        else
         {
-            return pacMan.currentNode;
-        }
-        if(name=="Inky")
-        {
-            return pacMan.currentNode;
-        }
-        if(name=="Pinky")
-        {
-            return pacMan.currentNode;
+            var random= new System.Random();
+            int index=random.Next(graph.floor.Count);
+            return graph.floor[index];
+
         }
         return pacMan.currentNode;
         
@@ -225,7 +243,7 @@ public class GameManager : MonoBehaviour
         List<Node> path= new List<Node>();
         if(ghost.reachedPathEnd)
         {
-            Node chaseNode=GetChaseNode(ghost.name);
+            Node chaseNode=GetChaseNode(ghost.name,ghost.ghostState);
             path=CalculatePath(ghost.currentNode,chaseNode);
             ghost.reachedPathEnd=false;
             return path;
@@ -267,7 +285,50 @@ public class GameManager : MonoBehaviour
     void EatPill()
     {
         score+=pillScore;
-        //TODO Ghost scatter state
+        ScatterGhosts();
+    }
+    void ScatterGhosts()
+    {
+        
+        //Switch all ghosts to scatter mode and update sprites 
+        foreach(Ghost ghost in ghosts)
+        { 
+            if(ghost.ghostState==State.Chase)
+            {
+                if(ghost!=null)
+                {
+                    ghost.SwitchState(scatterSprite);
+                }
+                
+            }
+            
+        }
+        //Moves the ghosts during the scatter time 
+        StartCoroutine(ScatterCoroutine(scatterTime));
+    }
+    IEnumerator ScatterCoroutine(float scatterTime)
+    {
+        float elapsedTime=0f;
+        scatterTime=Mathf.Clamp(scatterTime,0.1f,7f);
+        while(elapsedTime<scatterTime)
+        {
+            elapsedTime+=Time.deltaTime;
+            yield return null;
+        }
+        //Switch ghosts back to chase state 
+        foreach(Ghost ghost in ghosts)
+        {
+            if(ghost!=null)
+            {
+                ghost.SwitchState(scatterSprite);
+            }
+            
+        }
+    }
+
+    void GhostRespawn()
+    {
+        //TODO
     }
 
        

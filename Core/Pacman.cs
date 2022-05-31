@@ -37,7 +37,18 @@ public class Pacman : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        //TODO
+        if(other.tag=="ghost")
+        {
+            Ghost ghost = other.gameObject.GetComponent<Ghost>();
+            if(ghost.ghostState==State.Chase)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Destroy(other.gameObject);
+            }
+        }
     }
 
 

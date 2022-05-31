@@ -10,13 +10,15 @@ public class Ghost : MonoBehaviour
 {
   
     public string ghostName;
-    private State ghostState;
+    public State ghostState;
     //Movement Variables
     [Header("Movement")]
     [SerializeField] public float ghostSpeed;
     [SerializeField] private float moveTime=0.5f;
     private Graph graph;
     private Vector3 direction;
+    private SpriteRenderer spriteRenderer;
+    private Sprite chaseSprite;
     public Node currentNode;
     public List<Node> nodePath;
     public bool reachedPathEnd;
@@ -28,11 +30,15 @@ public class Ghost : MonoBehaviour
         this.graph=graph;
         ghostState=State.Chase;
         reachedPathEnd=true;
+        spriteRenderer=gameObject.GetComponent<SpriteRenderer>();
+        chaseSprite=spriteRenderer.sprite;
     }
+
     public void Move(Node goalNode)
     {
         StartCoroutine(MoveToNodeRoutine(goalNode));
     }
+    //Coroutine for smooth movement interpolation between nodes
     IEnumerator MoveToNodeRoutine(Node goalNode)
     {
         float elapsedTime=0;
@@ -57,21 +63,24 @@ public class Ghost : MonoBehaviour
             yield return null;
         }        
     }
+
     public bool HasReachedNode(Node node)
     {
         float distanceSqr=(node.position-transform.position).sqrMagnitude;
         return(distanceSqr<0.01f);
     }
 
-    public void SwitchState()
+    public void SwitchState(Sprite scatterSprite)
     {
         if(ghostState==State.Chase)
         {
             ghostState=State.Scatter;
+            spriteRenderer.sprite=scatterSprite;
         }
         else
         {
             ghostState=State.Chase;
+            spriteRenderer.sprite=chaseSprite;
         }
 
     }
