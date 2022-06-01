@@ -46,7 +46,7 @@ public class Pacman : MonoBehaviour
             }
             else
             {
-                Destroy(other.gameObject);
+                ghost.Capture();
             }
         }
     }

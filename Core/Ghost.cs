@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,16 +18,20 @@ public class Ghost : MonoBehaviour
     [SerializeField] private float moveTime=0.5f;
     private Graph graph;
     private Vector3 direction;
-    private SpriteRenderer spriteRenderer;
+    private  SpriteRenderer spriteRenderer;
     private Sprite chaseSprite;
     public Node currentNode;
+    public Node startNode;
+    public bool isCaptured=false;
     public List<Node> nodePath;
     public bool reachedPathEnd;
+    public static event Action OnGhostCaptured;
 
     public void Init(string name,Node currentNode,Graph graph)
     {
         this.ghostName=name;
         this.currentNode=currentNode;
+        this.startNode=currentNode;
         this.graph=graph;
         ghostState=State.Chase;
         reachedPathEnd=true;
@@ -84,9 +89,20 @@ public class Ghost : MonoBehaviour
         }
 
     }
-    void OnTriggerEnter2D(Collider2D other)
+    public void Capture()
     {
-    
-        //TODO
+        isCaptured=true;
+        spriteRenderer.sprite=null;
+        nodePath.Clear();
+        currentNode=startNode;
+        OnGhostCaptured?.Invoke();
+    }
+    public void Respawn()
+    {
+        isCaptured=false;
+        spriteRenderer.sprite=chaseSprite;
+        Debug.Log($"Ghost respawn node {currentNode.position}");
+        transform.position=startNode.position;
+        
     }
 }

@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     [Header("Scatter")]
     [SerializeField] float scatterTime;
     [SerializeField] Sprite scatterSprite;
+    [Header("Respawn")]
+    [SerializeField] float ghostRespawnTime;
     [Header("Score values")]
     [SerializeField] int pelletScore;
     [SerializeField] int pillScore;
@@ -41,11 +43,13 @@ public class GameManager : MonoBehaviour
     {
         Pellet.OnPelletEaten+=EatPellet;
         Pill.OnPillEaten+=EatPill;
+        //Ghost.OnGhostCaptured+=GhostRespawn;
     }
     void OnDisable()
     {
         Pellet.OnPelletEaten-=EatPellet;
         Pill.OnPillEaten-=EatPill;
+        //Ghost.OnGhostCaptured-=GhostRespawn;
     }
 
     // Start is called before the first frame update
@@ -328,7 +332,18 @@ public class GameManager : MonoBehaviour
 
     void GhostRespawn()
     {
-        //TODO
+        foreach(Ghost ghost in ghosts)
+        {
+            if(ghost.isCaptured)
+            {
+                StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime));
+                ghost.Respawn();
+            }
+        }
+    }
+    IEnumerator GhostRespawnCoroutine(float ghostSpawnTime)
+    {
+       yield return new WaitForSeconds(ghostSpawnTime);
     }
 
        
