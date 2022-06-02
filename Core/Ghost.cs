@@ -92,8 +92,5 @@ public class Ghost : MonoBehaviour
     {
         OnGhostCaptured?.Invoke();
     }
-    public void Respawn()
-    {
-        
-    }
+    
 }

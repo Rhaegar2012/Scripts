@@ -284,7 +284,6 @@ public class GameManager : MonoBehaviour
     void EatPellet()
     {
         score+=pelletScore;
-    
     }
     void EatPill()
     {
@@ -332,22 +331,10 @@ public class GameManager : MonoBehaviour
 
     void GhostRespawn()
     {
-        for(int i=0;i< pacMan.capturedGhosts.Count;i++)
-        {
-            string name=pacMan.capturedGhosts[i];
-            pacMan.capturedGhosts.RemoveAt(i);
-            for(int j=0;j<ghostNames.Length;j++)
-            {
-                Debug.Log($"captured ghost name {name}");
-                Debug.Log($"ghost list name {ghostNames[j]}");
-                if(name.Equals(ghostNames[j]))
-                {
-                    
-                    StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime,ghostPrefabs[j],ghostStartNodes[j],ghostNames[j]));
-                }
-            }
-        }
-        
+      
+        string name=pacMan.capturedGhost;
+        int index= Array.IndexOf(ghostNames,name);
+        StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime,ghostPrefabs[index],ghostStartNodes[index],ghostNames[index])); 
     }
     IEnumerator GhostRespawnCoroutine(float ghostSpawnTime,GameObject prefab,Vector3 node,string name)
     {
@@ -363,6 +350,10 @@ public class GameManager : MonoBehaviour
        GameObject instance=InstantiateGameObject(node,prefab);
        Ghost ghost = instance.GetComponent<Ghost>();
        ghost.Init(name,startNode,graph);
+       if(ghost.ghostState==State.Scatter)
+       {
+           ghost.SwitchState(scatterSprite);
+       }
        ghosts.Add(ghost);
      
     }

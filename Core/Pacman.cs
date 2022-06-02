@@ -12,6 +12,7 @@ public class Pacman : MonoBehaviour
     private Vector2 currentDirection;
     public List<Node> currentPath;
     public List<string> capturedGhosts;
+    public string capturedGhost;
 
     //Unity event
     void Update()
@@ -38,8 +39,10 @@ public class Pacman : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
+        
         if(other.tag=="ghost")
         {
+    
             Ghost ghost = other.gameObject.GetComponent<Ghost>();
             string name=ghost.ghostName;
             if(ghost.ghostState==State.Chase)
@@ -49,6 +52,7 @@ public class Pacman : MonoBehaviour
             else
             {
                 capturedGhosts.Add(name);
+                capturedGhost=name;
                 ghost.Capture();
                 Destroy(other.gameObject);
             }
