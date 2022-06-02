@@ -43,13 +43,13 @@ public class GameManager : MonoBehaviour
     {
         Pellet.OnPelletEaten+=EatPellet;
         Pill.OnPillEaten+=EatPill;
-        //Ghost.OnGhostCaptured+=GhostRespawn;
+        Ghost.OnGhostCaptured+=GhostRespawn;
     }
     void OnDisable()
     {
         Pellet.OnPelletEaten-=EatPellet;
         Pill.OnPillEaten-=EatPill;
-        //Ghost.OnGhostCaptured-=GhostRespawn;
+        Ghost.OnGhostCaptured-=GhostRespawn;
     }
 
     // Start is called before the first frame update
@@ -332,18 +332,39 @@ public class GameManager : MonoBehaviour
 
     void GhostRespawn()
     {
-        foreach(Ghost ghost in ghosts)
+        for(int i=0;i< pacMan.capturedGhosts.Count;i++)
         {
-            if(ghost.isCaptured)
+            string name=pacMan.capturedGhosts[i];
+            pacMan.capturedGhosts.RemoveAt(i);
+            for(int j=0;j<ghostNames.Length;j++)
             {
-                StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime));
-                ghost.Respawn();
+                Debug.Log($"captured ghost name {name}");
+                Debug.Log($"ghost list name {ghostNames[j]}");
+                if(name.Equals(ghostNames[j]))
+                {
+                    
+                    StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime,ghostPrefabs[j],ghostStartNodes[j],ghostNames[j]));
+                }
             }
         }
+        
     }
-    IEnumerator GhostRespawnCoroutine(float ghostSpawnTime)
+    IEnumerator GhostRespawnCoroutine(float ghostSpawnTime,GameObject prefab,Vector3 node,string name)
     {
-       yield return new WaitForSeconds(ghostSpawnTime);
+         
+       float timeElapsed=0f;
+       ghostSpawnTime=Mathf.Clamp(ghostSpawnTime,0.1f,5f);
+       while(timeElapsed<ghostSpawnTime)
+       {
+           timeElapsed+=Time.deltaTime;
+           yield return null;
+       }
+       Node startNode=graph.nodes[(int)node.x,(int)node.y];
+       GameObject instance=InstantiateGameObject(node,prefab);
+       Ghost ghost = instance.GetComponent<Ghost>();
+       ghost.Init(name,startNode,graph);
+       ghosts.Add(ghost);
+     
     }
 
        

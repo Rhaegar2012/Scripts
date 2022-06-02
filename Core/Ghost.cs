@@ -22,7 +22,6 @@ public class Ghost : MonoBehaviour
     private Sprite chaseSprite;
     public Node currentNode;
     public Node startNode;
-    public bool isCaptured=false;
     public List<Node> nodePath;
     public bool reachedPathEnd;
     public static event Action OnGhostCaptured;
@@ -91,18 +90,10 @@ public class Ghost : MonoBehaviour
     }
     public void Capture()
     {
-        isCaptured=true;
-        spriteRenderer.sprite=null;
-        nodePath.Clear();
-        currentNode=startNode;
         OnGhostCaptured?.Invoke();
     }
     public void Respawn()
     {
-        isCaptured=false;
-        spriteRenderer.sprite=chaseSprite;
-        Debug.Log($"Ghost respawn node {currentNode.position}");
-        transform.position=startNode.position;
         
     }
 }
