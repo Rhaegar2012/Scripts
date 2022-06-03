@@ -10,6 +10,7 @@ public class Pacman : MonoBehaviour
     public Node currentNode;
     private Rigidbody2D myRigidBody;
     private Vector2 currentDirection;
+    private Animator animator;
     public List<Node> currentPath;
     public List<string> capturedGhosts;
     public string capturedGhost;
@@ -27,6 +28,7 @@ public class Pacman : MonoBehaviour
         myRigidBody=GetComponent<Rigidbody2D>();
         myRigidBody.velocity*=pacmanSpeed;
         currentPath=new List<Node>();
+        animator= GetComponent<Animator>();
         
     }
 
@@ -57,7 +59,19 @@ public class Pacman : MonoBehaviour
                 Destroy(other.gameObject);
             }
         }
+        if(other.tag=="pellet"||other.tag=="pill")
+        {
+            animator.SetBool("isEating",true);
+        }
     }
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if(other.tag=="pellet"||other.tag=="pill")
+        {
+            animator.SetBool("isEating",false);
+        }
+    }
+
 
 
  
