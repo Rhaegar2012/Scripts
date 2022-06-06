@@ -6,8 +6,7 @@ public class SoundManager : MonoBehaviour
 {
     [Header("Audio Controls")]
     [Range (0,1)]
-    [SerializeField] public float musicVolume=1.0f;
-    [SerializeField] public float soundVolume=1.0f;
+    [SerializeField] public float fxVolume=1.0f;
     [Header("Music Assets")]
     [SerializeField] public AudioClip introClip;
     [SerializeField] public AudioClip intermissionClip;
@@ -17,14 +16,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] public AudioClip pacmanDeathClip;
     [SerializeField] public AudioClip pacmanEatGhostClip;
     // Start is called before the first frame update
-    void Start()
+    public void PlayClip(AudioClip clip)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        AudioSource.PlayClipAtPoint(clip,Camera.main.transform.position,fxVolume);
     }
 }

@@ -14,6 +14,7 @@ public class Pacman : MonoBehaviour
     public List<Node> currentPath;
     public List<string> capturedGhosts;
     public string capturedGhost;
+    public static event Action OnPacmanDeath;
 
     //Unity event
     void Update()
@@ -49,6 +50,8 @@ public class Pacman : MonoBehaviour
             string name=ghost.ghostName;
             if(ghost.ghostState==State.Chase)
             {
+                OnPacmanDeath?.Invoke();
+                animator.SetBool("isDead",true);
                 Destroy(gameObject);
             }
             else

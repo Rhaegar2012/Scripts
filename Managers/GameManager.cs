@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject pacmanPrefab;
     [SerializeField] Vector3 pacmanStartNode;
     [SerializeField] Vector3 movementDirection;
+    [SerializeField] int pacmanLives;
     private  Node  pacmanStart;
     [Header("Ghost Initialization")]
     [SerializeField] GameObject[] ghostPrefabs;
@@ -32,6 +33,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] int pelletScore;
     [SerializeField] int pillScore;
     [SerializeField] int ghostScore;
+    [Header("Sound")]
+    [SerializeField] SoundManager soundManager;
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<Ghost> ghosts;
@@ -44,12 +47,14 @@ public class GameManager : MonoBehaviour
         Pellet.OnPelletEaten+=EatPellet;
         Pill.OnPillEaten+=EatPill;
         Ghost.OnGhostCaptured+=GhostRespawn;
+        Pacman.OnPacmanDeath+=PacmanDeath;
     }
     void OnDisable()
     {
         Pellet.OnPelletEaten-=EatPellet;
         Pill.OnPillEaten-=EatPill;
         Ghost.OnGhostCaptured-=GhostRespawn;
+        Pacman.OnPacmanDeath-=PacmanDeath;
     }
 
     // Start is called before the first frame update
@@ -66,7 +71,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(pacMan)
+        if(pacMan && pacmanLives>0)
         {
             PlayerInput();
             PacManMove(movementDirection, pacMan.currentNode);
@@ -242,6 +247,10 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection,switchNode);
         }
     }
+    void PacmanDeath()
+    {
+        pacmanLives--;
+    }
     List<Node> GhostPath(Ghost ghost)
     {
         List<Node> path= new List<Node>();
@@ -283,10 +292,12 @@ public class GameManager : MonoBehaviour
     }
     void EatPellet()
     {
+        soundManager.PlayClip(soundManager.pacmanMunchClip);
         score+=pelletScore;
     }
     void EatPill()
     {
+        soundManager.PlayClip(soundManager.pacmanMunchClip);
         score+=pillScore;
         ScatterGhosts();
     }
@@ -306,6 +317,7 @@ public class GameManager : MonoBehaviour
             }
             
         }
+        soundManager.PlayClip(soundManager.intermissionClip);
         //Moves the ghosts during the scatter time 
         StartCoroutine(ScatterCoroutine(scatterTime));
     }
@@ -331,7 +343,8 @@ public class GameManager : MonoBehaviour
 
     void GhostRespawn()
     {
-      
+        soundManager.PlayClip(soundManager.pacmanEatGhostClip);
+        score+=ghostScore;
         string name=pacMan.capturedGhost;
         int index= Array.IndexOf(ghostNames,name);
         StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime,ghostPrefabs[index],ghostStartNodes[index],ghostNames[index])); 
