@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
     private Pacman pacMan;
     private List<Ghost> ghosts;
     private List<GameObject> pellets;
+    private Node rightPortalNode;
+    private Node leftPortalNode;
     private string[] ghostNames={"Blinky","Clyde","Inky","Pinky"};
     private int score=0;
     //Observer Events
@@ -70,6 +72,7 @@ public class GameManager : MonoBehaviour
         DrawGhosts();
         DrawPellets();
         DrawPills();
+        InitializePortalNodes();
     
     }
 
@@ -147,6 +150,11 @@ public class GameManager : MonoBehaviour
             GameObject instance= InstantiateGameObject(pillStartNodes[i],pillPrefab);
         }
 
+    }
+    void InitializePortalNodes()
+    {
+        rightPortalNode=graph.nodes[(int)rightPortal.transform.position.x,(int)rightPortal.transform.position.y];
+        leftPortalNode=graph.nodes[(int)leftPortal.transform.position.x,(int)leftPortal.transform.position.y];
     }
     GameObject InstantiateGameObject(Vector3 nodePosition,GameObject gameObjectPrefab)
     {
@@ -227,19 +235,29 @@ public class GameManager : MonoBehaviour
     void SwitchDirection(string direction)
     {
         Vector3 trialDirection= new();
+        Vector3 scale= new();
+        Quaternion rotation=new();
         switch(direction)
         {
             case "right":
             trialDirection=new Vector3(1,0,0);
+            scale=new Vector3(1,1,1);
+            rotation= new Quaternion(0,0,0);
             break;
             case "left":
             trialDirection=new Vector3(-1,0,0);
+            scale= new Vector3(-1,1,1);
+            rotation= new Quaternion(0,0,0);
             break;
             case "down":
             trialDirection=new Vector3(0,-1,0);
+            scale=new Vector3(1,1,1);
+            rotation= new Quaternion(0,-90,0);
             break;
             case "up":
             trialDirection= new Vector3(0,1,0);
+            scale=new Vector3(1,1,1);
+            rotation= new Quaternion(0,90,0);
             break;
         }
         int pacManX=(int) pacMan.transform.position.x;
@@ -249,6 +267,8 @@ public class GameManager : MonoBehaviour
         {
             movementDirection=trialDirection;
             pacMan.currentPath.Clear();
+            pacMan.transform.localScale=scale;
+            pacMan.transform.rotation=rotation;
             PacManMove(movementDirection,switchNode);
         }
     }
@@ -280,15 +300,19 @@ public class GameManager : MonoBehaviour
 
     void PacmanTeleport()
     {
-        Debug.Log($"Portal Node {pacMan.currentNode.position}");
+        
         Vector3 pacmanPosition= pacMan.currentNode.position;
         if(pacmanPosition==leftPortal.transform.position)
         {
-            //TODO
+        
+            pacMan.currentNode=rightPortalNode;
+            pacMan.transform.position=rightPortal.transform.position;
         }
-        else
+        else if(pacmanPosition==rightPortal.transform.position)
         {
-            //TODO
+            
+            pacMan.currentNode=leftPortalNode;
+            pacMan.transform.position=leftPortal.transform.position;
         }
     }
 
