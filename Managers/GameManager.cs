@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] public MazeData mazeData;
     [SerializeField] public Graph graph;
     [SerializeField] public GraphView graphView;
+    [Header("Portals")]
+    [SerializeField] GameObject leftPortal;
+    [SerializeField] GameObject rightPortal;
     [Header("Power ups")]
     [SerializeField] public GameObject pelletPrefab;
     [SerializeField] public GameObject pillPrefab;
@@ -48,6 +51,7 @@ public class GameManager : MonoBehaviour
         Pill.OnPillEaten+=EatPill;
         Ghost.OnGhostCaptured+=GhostRespawn;
         Pacman.OnPacmanDeath+=PacmanDeath;
+        Pacman.OnPacmanTeleport+=PacmanTeleport;
     }
     void OnDisable()
     {
@@ -55,6 +59,7 @@ public class GameManager : MonoBehaviour
         Pill.OnPillEaten-=EatPill;
         Ghost.OnGhostCaptured-=GhostRespawn;
         Pacman.OnPacmanDeath-=PacmanDeath;
+        Pacman.OnPacmanTeleport-=PacmanTeleport;
     }
 
     // Start is called before the first frame update
@@ -250,7 +255,43 @@ public class GameManager : MonoBehaviour
     void PacmanDeath()
     {
         pacmanLives--;
+        soundManager.PlayClip(soundManager.pacmanDeathClip);
+        if(pacmanLives>0)
+        {
+           
+            StartCoroutine(RestartSequence());
+
+        }
     }
+    IEnumerator RestartSequence()
+    {
+        foreach(Ghost ghost in ghosts)
+        {
+            if(ghost!=null)
+            {
+                Destroy(ghost.gameObject);
+            }
+          
+        }
+        yield return new WaitForSeconds(2);
+        DrawPacMan();
+        DrawGhosts();
+    }
+
+    void PacmanTeleport()
+    {
+        Debug.Log($"Portal Node {pacMan.currentNode.position}");
+        Vector3 pacmanPosition= pacMan.currentNode.position;
+        if(pacmanPosition==leftPortal.transform.position)
+        {
+            //TODO
+        }
+        else
+        {
+            //TODO
+        }
+    }
+
     List<Node> GhostPath(Ghost ghost)
     {
         List<Node> path= new List<Node>();

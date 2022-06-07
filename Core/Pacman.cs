@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,11 +16,12 @@ public class Pacman : MonoBehaviour
     public List<string> capturedGhosts;
     public string capturedGhost;
     public static event Action OnPacmanDeath;
+    public static event Action OnPacmanTeleport;
 
     //Unity event
     void Update()
     {
-        transform.position=Vector3.MoveTowards(transform.position,currentNode.position,pacmanSpeed*Time.deltaTime);
+        transform.position=Vector3.MoveTowards(transform.position,currentNode.position,pacmanSpeed*Time.deltaTime); 
     }
     //Initializes PacMan from GameController
     public void Init(Node startNode,Graph maze)
@@ -42,17 +44,18 @@ public class Pacman : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        
+       
         if(other.tag=="ghost")
         {
-    
+
+            animator.SetBool("isEating",false);
             Ghost ghost = other.gameObject.GetComponent<Ghost>();
             string name=ghost.ghostName;
             if(ghost.ghostState==State.Chase)
             {
                 OnPacmanDeath?.Invoke();
                 animator.SetBool("isDead",true);
-                Destroy(gameObject);
+                StartCoroutine(DeathSequence());
             }
             else
             {
@@ -66,13 +69,22 @@ public class Pacman : MonoBehaviour
         {
             animator.SetBool("isEating",true);
         }
-    }
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if(other.tag=="pellet"||other.tag=="pill")
+        if(other.tag=="portal")
         {
-            animator.SetBool("isEating",false);
+            OnPacmanTeleport?.Invoke();
         }
+    }
+    IEnumerator DeathSequence()
+    {
+        yield return new WaitForSeconds(1);
+        Destroy(gameObject);
+        
+    }
+    IEnumerator EatAnimation()
+    {
+        yield return null;
+        animator.SetBool("isEating",true);
+        
     }
 
 
