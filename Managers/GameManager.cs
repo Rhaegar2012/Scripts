@@ -235,29 +235,27 @@ public class GameManager : MonoBehaviour
     void SwitchDirection(string direction)
     {
         Vector3 trialDirection= new();
-        Vector3 scale= new();
-        Quaternion rotation=new();
+        Vector3 scale= new Vector3(1,1,1);
+        string rotation="";
         switch(direction)
         {
             case "right":
             trialDirection=new Vector3(1,0,0);
             scale=new Vector3(1,1,1);
-            rotation= new Quaternion(0,0,0);
+            rotation="right";
             break;
             case "left":
             trialDirection=new Vector3(-1,0,0);
             scale= new Vector3(-1,1,1);
-            rotation= new Quaternion(0,0,0);
+            rotation="left";
             break;
             case "down":
             trialDirection=new Vector3(0,-1,0);
-            scale=new Vector3(1,1,1);
-            rotation= new Quaternion(0,-90,0);
+            rotation="down";
             break;
             case "up":
             trialDirection= new Vector3(0,1,0);
-            scale=new Vector3(1,1,1);
-            rotation= new Quaternion(0,90,0);
+            rotation="up";
             break;
         }
         int pacManX=(int) pacMan.transform.position.x;
@@ -268,9 +266,35 @@ public class GameManager : MonoBehaviour
             movementDirection=trialDirection;
             pacMan.currentPath.Clear();
             pacMan.transform.localScale=scale;
-            pacMan.transform.rotation=rotation;
+            RotatePacman(rotation);
             PacManMove(movementDirection,switchNode);
         }
+    }
+    void RotatePacman(string rotation)
+    {
+        float localAngle=pacMan.transform.localEulerAngles.z;
+        float rotationAngle=0f;
+        if(localAngle==0 && rotation=="up")
+        {
+            rotationAngle=90f;
+        }
+        else if(localAngle==270 && rotation =="up")
+        {
+            rotationAngle=180f;
+        }
+        if(localAngle==0 && rotation=="down")
+        {
+            rotationAngle=-90f;
+        }
+        else if(localAngle==90 &&rotation=="down")
+        {
+            rotationAngle=-180f;
+        }
+        else if (rotation=="left" || rotation=="right")
+        {
+            pacMan.transform.rotation=Quaternion.identity;
+        }
+        pacMan.transform.Rotate(0,0,rotationAngle,Space.Self);
     }
     void PacmanDeath()
     {
