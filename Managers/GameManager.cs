@@ -37,6 +37,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] int pelletScore;
     [SerializeField] int pillScore;
     [SerializeField] int ghostScore;
+    [Header("Waiting times")]
+    [SerializeField] float startTime;
+    [SerializeField] float restartTime;
     [Header("Sound")]
     [SerializeField] SoundManager soundManager;
     [Header("UI Components")]
@@ -68,17 +71,15 @@ public class GameManager : MonoBehaviour
         Pacman.OnPacmanDeath-=PacmanDeath;
         Pacman.OnPacmanTeleport-=PacmanTeleport;
     }
-
+  
     // Start is called before the first frame update
     void Start()
     {
+       
         CreateMaze();
-        DrawPacMan();
-        DrawGhosts();
-        DrawPellets();
-        DrawPills();
-        InitializePortalNodes();
-    
+        StartCoroutine(StartSequence());
+
+      
     }
 
     // Update is called once per frame
@@ -90,16 +91,31 @@ public class GameManager : MonoBehaviour
             PacManMove(movementDirection, pacMan.currentNode);
             
         }
-        foreach(Ghost ghost in ghosts)
+        if(ghosts!=null)
         {
-            if(ghost!=null)
+            foreach(Ghost ghost in ghosts)
             {
-                ghost.nodePath= GhostPath(ghost);
-                MoveGhost(ghost.nodePath,ghost);
+                if(ghost!=null)
+                {
+                    ghost.nodePath= GhostPath(ghost);
+                    MoveGhost(ghost.nodePath,ghost);
+                }   
             }
-          
         }
+   
      
+    }
+    //Start Sequence
+    IEnumerator StartSequence()
+    {
+        soundManager.PlayClip(soundManager.introClip);
+        yield return new WaitForSeconds(startTime);
+        DrawPacMan();
+        DrawGhosts();
+        DrawPellets();
+        DrawPills();
+        InitializePortalNodes();
+   
     }
     //Draw GameObjects
     void CreateMaze()
@@ -176,11 +192,38 @@ public class GameManager : MonoBehaviour
             }
             if(name=="Clyde")
             {
-                return pacMan.currentNode;
+                var random= new System.Random();
+                int index=random.Next(graph.floor.Count);
+                return graph.floor[index];
             }
             if(name=="Inky")
             {
-                return pacMan.currentNode;
+    
+                foreach(Ghost ghost in ghosts)
+                {
+                    if(ghost!=null)
+                    {
+                        if(ghost.ghostName=="Blinky")
+                        {
+                            Node blinkyNode=ghost.currentNode;
+                            int distance= (int)Vector3.Distance(blinkyNode.position,pacMan.currentNode.position);
+                            Vector2[] trialDirections= {
+                                new Vector2(distance,0),
+                                new Vector2(0,distance)
+                            };
+                            for(int i=0;i<trialDirections.Length;i++)
+                            {
+                                if(graph.IsValidNode(trialDirections[i],blinkyNode))
+                                {
+                                    return graph.GetNewNode(trialDirections[i],blinkyNode);
+                                }
+                            }
+                            return pacMan.currentNode;
+                        }
+                    }
+                }
+                
+
             }
             if(name=="Pinky")
             {
@@ -323,7 +366,7 @@ public class GameManager : MonoBehaviour
             }
           
         }
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(restartTime);
         DrawPacMan();
         DrawGhosts();
     }
