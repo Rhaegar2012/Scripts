@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -38,6 +39,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] int ghostScore;
     [Header("Sound")]
     [SerializeField] SoundManager soundManager;
+    [Header("UI Components")]
+    [SerializeField] TextMeshProUGUI pacmanLivesText;
+    [SerializeField] TextMeshProUGUI pacmanScoreText;
+
     private GameObject pacManObject;
     private Pacman pacMan;
     private List<Ghost> ghosts;
@@ -299,6 +304,7 @@ public class GameManager : MonoBehaviour
     void PacmanDeath()
     {
         pacmanLives--;
+        pacmanLivesText.text=pacmanLives.ToString();
         soundManager.PlayClip(soundManager.pacmanDeathClip);
         if(pacmanLives>0)
         {
@@ -383,11 +389,13 @@ public class GameManager : MonoBehaviour
     {
         soundManager.PlayClip(soundManager.pacmanMunchClip);
         score+=pelletScore;
+        pacmanScoreText.text=score.ToString();
     }
     void EatPill()
     {
         soundManager.PlayClip(soundManager.pacmanMunchClip);
         score+=pillScore;
+        pacmanScoreText.text=score.ToString();
         ScatterGhosts();
     }
     void ScatterGhosts()
@@ -434,6 +442,7 @@ public class GameManager : MonoBehaviour
     {
         soundManager.PlayClip(soundManager.pacmanEatGhostClip);
         score+=ghostScore;
+        pacmanScoreText.text=score.ToString();
         string name=pacMan.capturedGhost;
         int index= Array.IndexOf(ghostNames,name);
         StartCoroutine(GhostRespawnCoroutine(ghostRespawnTime,ghostPrefabs[index],ghostStartNodes[index],ghostNames[index])); 
