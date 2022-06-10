@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     [Header("UI Components")]
     [SerializeField] TextMeshProUGUI pacmanLivesText;
     [SerializeField] TextMeshProUGUI pacmanScoreText;
+    [SerializeField] GameObject gameOverPanel;
 
     private GameObject pacManObject;
     private Pacman pacMan;
@@ -71,7 +72,25 @@ public class GameManager : MonoBehaviour
         Pacman.OnPacmanDeath-=PacmanDeath;
         Pacman.OnPacmanTeleport-=PacmanTeleport;
     }
+
+    //RestartSequence
+    public void OnRestart()
+    {
+        gameOverPanel.SetActive(false);
+        pacmanLives=3;
+        pacmanScoreText.text="0000";
+        pacmanLivesText.text=pacmanLives.ToString();
+        foreach(Ghost ghost in ghosts)
+        {
+            Destroy(ghost.gameObject);
+        }
+        StartCoroutine(StartSequence());
+    }
   
+    void Awake()
+    {
+        gameOverPanel.SetActive(false);
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -79,7 +98,6 @@ public class GameManager : MonoBehaviour
         CreateMaze();
         StartCoroutine(StartSequence());
 
-      
     }
 
     // Update is called once per frame
@@ -355,6 +373,10 @@ public class GameManager : MonoBehaviour
             StartCoroutine(RestartSequence());
 
         }
+        else
+        {
+            GameOver();
+        }
     }
     IEnumerator RestartSequence()
     {
@@ -369,6 +391,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(restartTime);
         DrawPacMan();
         DrawGhosts();
+    }
+
+    void GameOver()
+    {
+        StopAllCoroutines();
+        gameOverPanel.SetActive(true);
     }
 
     void PacmanTeleport()
